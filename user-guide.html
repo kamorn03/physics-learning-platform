@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คู่มือการใช้งาน PhysicsAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                font-size: 11pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .container {
+                max-width: 100%;
+                padding: 0;
+                box-shadow: none;
+            }
+            section {
+                page-break-inside: avoid;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        .no-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Cover Page */
+        .cover {
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .cover .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+        }
+
+        .cover .logo svg {
+            width: 50px;
+            height: 50px;
+            color: white;
+        }
+
+        .cover h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .cover .subtitle {
+            font-size: 20px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .cover .tagline {
+            font-size: 16px;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        /* Table of Contents */
+        .toc {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .toc h2 {
+            font-size: 20px;
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        .toc a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #334155;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #475569;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .info-box.student {
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .info-box.teacher {
+            background: linear-gradient(135deg, #dcfce7, #d1fae5);
+            border-left: 4px solid #10b981;
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+
+        /* Feature Cards */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-card h5 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Chapter Colors */
+        .chapter-1 { background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 4px solid #dc2626; }
+        .chapter-2 { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 4px solid #d97706; }
+        .chapter-3 { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 4px solid #059669; }
+
+        .chapter-box {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .chapter-box h4 {
+            margin-top: 0;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step;
+        }
+
+        .step {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 15px;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 2px solid #e2e8f0;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Highlight */
+        .highlight {
+            background: linear-gradient(120deg, #fef3c7 0%, #fef3c7 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Icon inline */
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button class="print-btn" onclick="window.print()">
+            พิมพ์ / บันทึกเป็น PDF
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Cover Page -->
+        <div class="cover">
+            <div class="logo">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <h1>คู่มือการใช้งาน PhysicsAI</h1>
+            <p class="subtitle">แพลตฟอร์มการเรียนรู้ฟิสิกส์ ม.4 อัจฉริยะ</p>
+            <p class="tagline">เรียนฟิสิกส์อย่างเข้าใจ ด้วยความช่วยเหลือจาก AI</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>สารบัญ</h2>
+            <ul>
+                <li><a href="#overview">1. ภาพรวมระบบ</a></li>
+                <li><a href="#student">2. คู่มือสำหรับนักเรียน</a></li>
+                <li><a href="#teacher">3. คู่มือสำหรับครูผู้สอน</a></li>
+                <li><a href="#curriculum">4. โครงสร้างบทเรียน</a></li>
+                <li><a href="#benefits">5. สรุปประโยชน์ที่ได้รับ</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Overview -->
+        <section id="overview">
+            <h2>1. ภาพรวมระบบ</h2>
+
+            <p><strong>PhysicsAI</strong> เป็นแพลตฟอร์มการเรียนรู้ฟิสิกส์ระดับชั้นมัธยมศึกษาปีที่ 4 ที่ออกแบบมาเพื่อช่วยให้นักเรียนเรียนรู้ได้ด้วยตนเอง พร้อม AI Tutor คอยช่วยเหลือตลอด 24 ชั่วโมง และช่วยครูติดตามความก้าวหน้าของนักเรียนได้อย่างมีประสิทธิภาพ</p>
+
+            <h3>คุณสมบัติหลักของระบบ</h3>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h5>บทเรียนครบถ้วน</h5>
+                    <p>เนื้อหาตามหลักสูตร สสวท. ครบทั้ง 3 บท</p>
+                </div>
+                <div class="feature-card">
+                    <h5>AI Tutor</h5>
+                    <p>ตอบคำถามและให้คำใบ้ได้ตลอด 24 ชั่วโมง</p>
+                </div>
+                <div class="feature-card">
+                    <h5>แบบฝึกหัด</h5>
+                    <p>ข้อสอบพร้อมเฉลยและคำอธิบายละเอียด</p>
+                </div>
+                <div class="feature-card">
+                    <h5>ติดตามความก้าวหน้า</h5>
+                    <p>ครูดูผลการเรียนนักเรียนได้ทันที</p>
+                </div>
+            </div>
+
+            <h3>การเข้าสู่ระบบ</h3>
+            <p>เมื่อเปิดใช้งานครั้งแรก ระบบจะให้เลือกบทบาท:</p>
+            <ul>
+                <li><strong>นักเรียน</strong> - เข้าสู่โหมดเรียนรู้ ทำแบบฝึกหัด และใช้ AI Tutor</li>
+                <li><strong>ครูผู้สอน</strong> - เข้าสู่โหมดวัดและประเมินผล ดูความก้าวหน้านักเรียน</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 2: Student Guide -->
+        <section id="student">
+            <h2>2. คู่มือสำหรับนักเรียน</h2>
+
+            <div class="info-box student">
+                <h4>นักเรียนจะได้อะไรจากระบบนี้?</h4>
+                <ul>
+                    <li>บทเรียนครบถ้วน 3 บท ตามหลักสูตรฟิสิกส์ ม.4</li>
+                    <li>ติดตามความก้าวหน้าการเรียนของตัวเอง</li>
+                    <li>แบบฝึกหัดพร้อมเฉลยและคำอธิบาย</li>
+                    <li>AI Tutor ช่วยตอบคำถามตลอด 24 ชั่วโมง</li>
+                    <li>เรียนได้ตามจังหวะของตัวเอง ทบทวนได้ไม่จำกัด</li>
+                </ul>
+            </div>
+
+            <h3>วิธีใช้งานหน้าต่างๆ</h3>
+
+            <h4>2.1 หน้าหลัก (Dashboard)</h4>
+            <p>หน้าหลักแสดงสถิติภาพรวมการเรียนของคุณ:</p>
+            <ul>
+                <li><strong>ความคืบหน้ารวม</strong> - เปอร์เซ็นต์ที่เรียนจบแล้วทั้งหมด</li>
+                <li><strong>หัวข้อที่เรียนแล้ว</strong> - จำนวนหัวข้อที่ผ่านแล้ว</li>
+                <li><strong>คะแนนเฉลี่ย</strong> - ผลการทำแบบฝึกหัด</li>
+                <li><strong>เรียนต่อจากที่ค้างไว้</strong> - กลับไปเรียนบทที่ยังไม่จบได้ทันที</li>
+            </ul>
+
+            <h4>2.2 หน้าบทเรียน</h4>
+            <p>หน้านี้แสดงบทเรียนทั้ง 3 บท พร้อมรายละเอียด:</p>
+            <ul>
+                <li>เลือกบทที่ต้องการเรียน</li>
+                <li>ดูหัวข้อและหัวข้อย่อยในแต่ละบท</li>
+                <li>ดูจุดประสงค์การเรียนรู้ (K-P-A)</li>
+                <li>ดูสูตรที่ใช้ในแต่ละหัวข้อ</li>
+            </ul>
+
+            <h4>2.3 การทำแบบฝึกหัด</h4>
+            <div class="steps">
+                <div class="step">เลือกบทที่ต้องการทดสอบ แล้วกด "ทำแบบฝึกหัด"</div>
+                <div class="step">อ่านคำถามและเลือกคำตอบที่คิดว่าถูกต้อง</div>
+                <div class="step">หากติดขัด กดปุ่ม "ขอคำใบ้จาก AI" เพื่อขอคำแนะนำ</div>
+                <div class="step">กด "ตรวจคำตอบ" เพื่อดูว่าตอบถูกหรือไม่</div>
+                <div class="step">อ่านคำอธิบายเพื่อทำความเข้าใจเพิ่มเติม</div>
+                <div class="step">ทำข้อถัดไปจนครบ ระบบจะแสดงคะแนนรวม</div>
+            </div>
+
+            <h4>2.4 AI Tutor</h4>
+            <p>AI Tutor ใช้วิธีสอนแบบ <span class="highlight">Socratic Method</span> คือจะถามคำถามนำให้คุณคิดเอง เพื่อให้เข้าใจอย่างลึกซึ้ง</p>
+            <ul>
+                <li>พิมพ์คำถามในช่องข้อความแล้วกดส่ง</li>
+                <li>หรือเลือกจากคำถามแนะนำที่มีให้</li>
+                <li>AI จะตอบและถามคำถามนำให้คิดต่อ</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 3: Teacher Guide -->
+        <section id="teacher">
+            <h2>3. คู่มือสำหรับครูผู้สอน</h2>
+
+            <div class="info-box teacher">
+                <h4>ครูจะได้อะไรจากระบบนี้?</h4>
+                <ul>
+                    <li>ภาพรวมความก้าวหน้าของนักเรียนทั้งห้อง</li>
+                    <li>ระบุนักเรียนที่ต้องการความดูแลพิเศษ</li>
+                    <li>วิเคราะห์ Misconceptions (ความเข้าใจผิด) ของนักเรียน</li>
+                    <li>แนวทางแก้ไขความเข้าใจผิดแต่ละรูปแบบ</li>
+                    <li>ประเมินผลตามจุดประสงค์ K-P-A</li>
+                </ul>
+            </div>
+
+            <h3>วิธีใช้งานหน้าต่างๆ</h3>
+
+            <h4>3.1 หน้าภาพรวม (Dashboard)</h4>
+            <p>แสดงสถิติภาพรวมของชั้นเรียน:</p>
+            <ul>
+                <li><strong>จำนวนนักเรียน</strong> - นักเรียนทั้งหมดในระบบ</li>
+                <li><strong>ความคืบหน้าเฉลี่ย</strong> - เปอร์เซ็นต์เฉลี่ยของทั้งห้อง</li>
+                <li><strong>นักเรียนที่ต้องดูแล</strong> - จำนวนที่มีผลการเรียนต่ำ</li>
+                <li><strong>Misconceptions</strong> - ความเข้าใจผิดที่พบบ่อย</li>
+                <li><strong>กิจกรรมล่าสุด</strong> - การใช้งานล่าสุดของนักเรียน</li>
+            </ul>
+
+            <h4>3.2 หน้ารายชื่อนักเรียน</h4>
+            <p>ตารางแสดงข้อมูลนักเรียนทุกคน:</p>
+            <ul>
+                <li>คะแนนแยกตามบท (บทที่ 1, 2, 3)</li>
+                <li>คะแนนเฉลี่ยรวม</li>
+                <li>สถานะ (ปกติ / ต้องดูแล)</li>
+                <li>วันที่เข้าใช้งานล่าสุด</li>
+            </ul>
+
+            <h4>3.3 หน้าวัดและประเมินผล</h4>
+            <p>แสดงการประเมินตามจุดประสงค์การเรียนรู้:</p>
+            <ul>
+                <li><strong>K (Knowledge)</strong> - ความรู้ความเข้าใจ</li>
+                <li><strong>P (Process)</strong> - ทักษะกระบวนการ</li>
+                <li><strong>A (Attitude)</strong> - เจตคติและคุณลักษณะ</li>
+            </ul>
+
+            <h4>3.4 หน้า Misconceptions</h4>
+            <p>วิเคราะห์ความเข้าใจผิดของนักเรียน:</p>
+            <ul>
+                <li>รูปแบบความเข้าใจผิดที่พบ</li>
+                <li>จำนวนนักเรียนที่มีความเข้าใจผิดแต่ละรูปแบบ</li>
+                <li>ความเข้าใจที่ถูกต้อง</li>
+                <li>แนวทางแก้ไขที่แนะนำ</li>
+                <li>รายชื่อนักเรียนที่ต้องช่วยเหลือ</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 4: Curriculum -->
+        <section id="curriculum">
+            <h2>4. โครงสร้างบทเรียน</h2>
+
+            <p>เนื้อหาจัดตามหลักสูตรฟิสิกส์ ม.4 มาตรฐาน สสวท. ประกอบด้วย 3 บทหลัก:</p>
+
+            <div class="chapter-box chapter-1">
+                <h4>บทที่ 1: ธรรมชาติและพัฒนาการทางฟิสิกส์</h4>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%">หัวข้อ</th>
+                        <th>เนื้อหา</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1.1</td><td>ธรรมชาติของฟิสิกส์</td></tr>
+                    <tr><td>1.1.1</td><td>การค้นคว้าหาความรู้ทางฟิสิกส์</td></tr>
+                    <tr><td>1.1.2</td><td>พัฒนาการของหลักการและแนวคิดทางฟิสิกส์</td></tr>
+                    <tr><td>1.1.3</td><td>ผลของพัฒนาการทางฟิสิกส์ที่มีต่อการแสวงหาความรู้ใหม่และการพัฒนาเทคโนโลยี</td></tr>
+                    <tr><td>1.2</td><td>การวัดและการบันทึกผลการวัดปริมาณทางฟิสิกส์</td></tr>
+                    <tr><td>1.2.1</td><td>ระบบหน่วยระหว่างชาติ (SI)</td></tr>
+                    <tr><td>1.2.2</td><td>สัญกรณ์วิทยาศาสตร์</td></tr>
+                    <tr><td>1.2.3</td><td>ความไม่แน่นอนในการวัด</td></tr>
+                    <tr><td>1.2.4</td><td>เลขนัยสำคัญ</td></tr>
+                    <tr><td>1.2.5</td><td>การบันทึกผลการคำนวณ</td></tr>
+                    <tr><td>1.3</td><td>การทดลองทางฟิสิกส์</td></tr>
+                    <tr><td>1.3.1</td><td>การรายงานความคลาดเคลื่อน</td></tr>
+                    <tr><td>1.3.2</td><td>การวิเคราะห์ผลการทดลอง</td></tr>
+                </tbody>
+            </table>
+
+            <div class="chapter-box chapter-2">
+                <h4>บทที่ 2: การเคลื่อนที่แนวตรง</h4>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%">หัวข้อ</th>
+                        <th>เนื้อหา</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>2.1</td><td>ตำแหน่ง</td></tr>
+                    <tr><td>2.2</td><td>การกระจัดและระยะทาง</td></tr>
+                    <tr><td>2.3</td><td>อัตราเร็วและความเร็ว</td></tr>
+                    <tr><td>2.3.1</td><td>อัตราเร็วเฉลี่ยและความเร็วเฉลี่ย</td></tr>
+                    <tr><td>2.3.2</td><td>อัตราเร็วขณะหนึ่งและความเร็วขณะหนึ่ง</td></tr>
+                    <tr><td>2.4</td><td>ความเร่ง</td></tr>
+                    <tr><td>2.4.1</td><td>ความเร่งเฉลี่ย</td></tr>
+                    <tr><td>2.4.2</td><td>ความเร่งขณะหนึ่ง</td></tr>
+                    <tr><td>2.5</td><td>กราฟของการเคลื่อนที่แนวตรง</td></tr>
+                    <tr><td>2.5.1</td><td>กราฟระหว่างตำแหน่งกับเวลา</td></tr>
+                    <tr><td>2.5.2</td><td>กราฟระหว่างความเร็วกับเวลา และกราฟระหว่างความเร่งกับเวลา</td></tr>
+                    <tr><td>2.6</td><td>สมการสำหรับการเคลื่อนที่แนวตรง</td></tr>
+                    <tr><td>2.6.1</td><td>การเคลื่อนที่ด้วยความเร็วคงตัว</td></tr>
+                    <tr><td>2.6.2</td><td>การเคลื่อนที่ด้วยความเร่งคงตัว</td></tr>
+                    <tr><td>2.7</td><td>การตกแบบเสรี</td></tr>
+                </tbody>
+            </table>
+
+            <div class="chapter-box chapter-3">
+                <h4>บทที่ 3: แรงและกฎการเคลื่อนที่</h4>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 15%">หัวข้อ</th>
+                        <th>เนื้อหา</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>3.1</td><td>แรง</td></tr>
+                    <tr><td>3.1.1</td><td>ลักษณะของแรง</td></tr>
+                    <tr><td>3.1.2</td><td>แผนภาพวัตถุอิสระ</td></tr>
+                    <tr><td>3.1.3</td><td>แรงบางชนิดที่ควรรู้</td></tr>
+                    <tr><td>3.2</td><td>การหาแรงลัพธ์</td></tr>
+                    <tr><td>3.2.1</td><td>การหาแรงลัพธ์โดยวิธีเขียนเวกเตอร์ของแรง</td></tr>
+                    <tr><td>3.2.2</td><td>การหาขนาดและทิศทางของแรงลัพธ์โดยการคำนวณ</td></tr>
+                    <tr><td>3.3</td><td>มวล แรง และกฎการเคลื่อนที่</td></tr>
+                    <tr><td>3.3.1</td><td>มวลและความเฉื่อย</td></tr>
+                    <tr><td>3.3.2</td><td>กฎการเคลื่อนที่ของนิวตัน</td></tr>
+                    <tr><td>3.4</td><td>แรงเสียดทาน</td></tr>
+                    <tr><td>3.5</td><td>แรงดึงดูดระหว่างมวล</td></tr>
+                    <tr><td>3.5.1</td><td>กฎความโน้มถ่วงสากล</td></tr>
+                    <tr><td>3.5.2</td><td>สนามโน้มถ่วง แรงโน้มถ่วงและน้ำหนัก</td></tr>
+                    <tr><td>3.6</td><td>การประยุกต์ใช้กฎการเคลื่อนที่</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 5: Benefits -->
+        <section id="benefits">
+            <h2>5. สรุปประโยชน์ที่ได้รับ</h2>
+
+            <h3>สำหรับนักเรียน</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%">ประโยชน์</th>
+                        <th>รายละเอียด</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>เรียนรู้ได้ทุกที่ทุกเวลา</td>
+                        <td>เข้าถึงบทเรียนออนไลน์ได้ตลอด 24 ชั่วโมง ไม่จำกัดสถานที่</td>
+                    </tr>
+                    <tr>
+                        <td>AI ช่วยสอน</td>
+                        <td>มี AI Tutor คอยตอบคำถามและให้คำใบ้เมื่อติดขัด</td>
+                    </tr>
+                    <tr>
+                        <td>ติดตามความก้าวหน้า</td>
+                        <td>รู้ว่าตัวเองเรียนถึงไหนแล้ว มีอะไรต้องเรียนเพิ่ม</td>
+                    </tr>
+                    <tr>
+                        <td>ฝึกทำข้อสอบ</td>
+                        <td>แบบฝึกหัดพร้อมเฉลยและคำอธิบายละเอียด</td>
+                    </tr>
+                    <tr>
+                        <td>เรียนตามจังหวะตัวเอง</td>
+                        <td>ไม่ต้องรีบตามคนอื่น เรียนซ้ำได้ไม่จำกัดครั้ง</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>สำหรับครูผู้สอน</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 30%">ประโยชน์</th>
+                        <th>รายละเอียด</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ติดตามนักเรียนได้ทันที</td>
+                        <td>ดูความก้าวหน้าของนักเรียนแต่ละคนแบบ Real-time</td>
+                    </tr>
+                    <tr>
+                        <td>ระบุนักเรียนที่ต้องดูแล</td>
+                        <td>ระบบแจ้งเตือนนักเรียนที่มีผลการเรียนต่ำกว่าเกณฑ์</td>
+                    </tr>
+                    <tr>
+                        <td>วิเคราะห์ Misconceptions</td>
+                        <td>รู้ว่านักเรียนเข้าใจผิดเรื่องอะไร พร้อมแนวทางแก้ไข</td>
+                    </tr>
+                    <tr>
+                        <td>ประหยัดเวลาตรวจงาน</td>
+                        <td>ระบบตรวจแบบฝึกหัดอัตโนมัติ พร้อมสรุปผล</td>
+                    </tr>
+                    <tr>
+                        <td>วางแผนการสอนได้ดีขึ้น</td>
+                        <td>มีข้อมูลสนับสนุนการตัดสินใจในการจัดการเรียนการสอน</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>PhysicsAI</strong> - แพลตฟอร์มการเรียนรู้ฟิสิกส์อัจฉริยะ</p>
+            <p>เรียนฟิสิกส์อย่างเข้าใจ ด้วยความช่วยเหลือจาก AI</p>
+        </div>
+    </div>
+</body>
+</html>

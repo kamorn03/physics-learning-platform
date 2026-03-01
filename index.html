@@ -233,6 +233,11 @@
 
         <!-- Lessons Page (Chapter List) -->
         <div x-show="currentPage === 'lessons' && userRole === 'student'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Back Button -->
+            <button @click="currentPage = 'dashboard'" class="flex items-center text-slate-500 hover:text-primary-600 mb-6 transition-all">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                กลับหน้าหลัก
+            </button>
             <h1 class="text-3xl font-bold text-slate-800 mb-2">บทเรียนทั้งหมด</h1>
             <p class="text-slate-500 mb-8">หลักสูตรฟิสิกส์ ม.4 ตามมาตรฐาน สสวท.</p>
 
@@ -523,7 +528,12 @@
 
         <!-- AI Tutor Page -->
         <div x-show="currentPage === 'ai-tutor'" x-cloak class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-10rem)]">
-            <div class="glass-card rounded-2xl shadow-lg h-full flex flex-col overflow-hidden">
+            <!-- Back Button -->
+            <button @click="currentPage = 'dashboard'" class="flex items-center text-slate-500 hover:text-primary-600 mb-4 transition-all">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                กลับหน้าหลัก
+            </button>
+            <div class="glass-card rounded-2xl shadow-lg h-[calc(100%-50px)] flex flex-col overflow-hidden">
                 <div class="p-4 border-b border-slate-200">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center">
@@ -662,6 +672,11 @@
 
         <!-- Students List -->
         <div x-show="currentPage === 'students-list' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Back Button -->
+            <button @click="currentPage = 'teacher-dashboard'" class="flex items-center text-slate-500 hover:text-green-600 mb-6 transition-all">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                กลับหน้าภาพรวม
+            </button>
             <h1 class="text-3xl font-bold text-slate-800 mb-8">รายชื่อนักเรียน</h1>
 
             <div class="glass-card rounded-2xl shadow-lg overflow-hidden">
@@ -714,6 +729,11 @@
 
         <!-- Assessment Page -->
         <div x-show="currentPage === 'assessment' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Back Button -->
+            <button @click="currentPage = 'teacher-dashboard'" class="flex items-center text-slate-500 hover:text-green-600 mb-6 transition-all">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                กลับหน้าภาพรวม
+            </button>
             <h1 class="text-3xl font-bold text-slate-800 mb-8">วัดและประเมินผล</h1>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -779,6 +799,11 @@
 
         <!-- Misconceptions Page -->
         <div x-show="currentPage === 'misconceptions' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Back Button -->
+            <button @click="currentPage = 'teacher-dashboard'" class="flex items-center text-slate-500 hover:text-green-600 mb-6 transition-all">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                กลับหน้าภาพรวม
+            </button>
             <h1 class="text-3xl font-bold text-slate-800 mb-2">Misconceptions Analysis</h1>
             <p class="text-slate-500 mb-8">วิเคราะห์ความเข้าใจผิดที่พบในนักเรียน</p>
 
