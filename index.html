@@ -21,24 +21,7 @@
             }
         }
     </script>
-    <style>
-        [x-cloak] { display: none !important; }
-        body { font-family: 'Noto Sans Thai', 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .gradient-teacher { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .chat-bubble-user { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-        .chat-bubble-ai { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); }
-        .floating-animation { animation: floating 3s ease-in-out infinite; }
-        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        .pulse-animation { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
-        .slide-in { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-slate-50 font-thai min-h-screen">
     <!-- Role Selector Modal -->
@@ -51,7 +34,7 @@
                     </svg>
                 </div>
                 <h1 class="text-2xl font-bold text-slate-800">ยินดีต้อนรับสู่ PhysicsAI</h1>
-                <p class="text-slate-500 mt-2">เลือกบทบาทของคุณเพื่อเริ่มต้นใช้งาน</p>
+                <p class="text-slate-500 mt-2">แพลตฟอร์มการเรียนรู้ฟิสิกส์ ม.4 อัจฉริยะ</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <button @click="userRole = 'student'; currentPage = 'dashboard'"
@@ -83,7 +66,13 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl" :class="userRole === 'teacher' ? 'gradient-teacher' : 'gradient-bg'" style="display:flex;align-items:center;justify-content:center;">
+                    <!-- Mobile menu button -->
+                    <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-lg hover:bg-slate-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" :class="userRole === 'teacher' ? 'gradient-teacher' : 'gradient-bg'">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
@@ -95,9 +84,8 @@
 
                 <!-- Student Navigation -->
                 <div x-show="userRole === 'student'" class="hidden md:flex items-center space-x-1">
-                    <button @click="currentPage = 'dashboard'" :class="currentPage === 'dashboard' ? 'bg-primary-100 text-primary-700' : 'text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-lg font-medium transition-all">หน้าหลัก</button>
-                    <button @click="currentPage = 'lessons'" :class="currentPage === 'lessons' ? 'bg-primary-100 text-primary-700' : 'text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-lg font-medium transition-all">บทเรียน</button>
-                    <button @click="currentPage = 'practice'" :class="currentPage === 'practice' ? 'bg-primary-100 text-primary-700' : 'text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-lg font-medium transition-all">แบบฝึกหัด</button>
+                    <button @click="currentPage = 'dashboard'; selectedChapter = null" :class="currentPage === 'dashboard' ? 'bg-primary-100 text-primary-700' : 'text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-lg font-medium transition-all">หน้าหลัก</button>
+                    <button @click="currentPage = 'lessons'; selectedChapter = null" :class="currentPage === 'lessons' || currentPage === 'lesson-detail' ? 'bg-primary-100 text-primary-700' : 'text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-lg font-medium transition-all">บทเรียน</button>
                     <button @click="currentPage = 'ai-tutor'" :class="currentPage === 'ai-tutor' ? 'bg-primary-100 text-primary-700' : 'text-slate-600 hover:bg-slate-100'" class="px-4 py-2 rounded-lg font-medium transition-all">AI Tutor</button>
                 </div>
 
@@ -129,64 +117,66 @@
         <div x-show="currentPage === 'dashboard' && userRole === 'student'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-slate-800">สวัสดี, สมชาย!</h1>
-                <p class="text-slate-500 mt-1">พร้อมเรียนรู้ฟิสิกส์วันนี้หรือยัง?</p>
+                <p class="text-slate-500 mt-1">พร้อมเรียนรู้ฟิสิกส์ ม.4 วันนี้หรือยัง?</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass-card rounded-2xl p-6 shadow-lg">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-slate-500 text-sm">บทเรียนที่เรียนแล้ว</p>
-                            <p class="text-3xl font-bold text-slate-800 mt-1">12</p>
+                            <p class="text-slate-500 text-sm">ความคืบหน้ารวม</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1" x-text="totalProgress + '%'"></p>
                         </div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         </div>
                     </div>
                 </div>
-                <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-sm">หัวข้อที่เรียนแล้ว</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1"><span x-text="completedTopics"></span>/<span x-text="totalTopics"></span></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-sm">บทเรียนทั้งหมด</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1">3 บท</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-slate-500 text-sm">คะแนนเฉลี่ย</p>
-                            <p class="text-3xl font-bold text-slate-800 mt-1">85%</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1">85%</p>
                         </div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card rounded-2xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-slate-500 text-sm">เวลาเรียนรวม</p>
-                            <p class="text-3xl font-bold text-slate-800 mt-1">24h</p>
-                        </div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card rounded-2xl p-6 shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-slate-500 text-sm">สตรีคการเรียน</p>
-                            <p class="text-3xl font-bold text-slate-800 mt-1">7</p>
-                        </div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Continue Learning & AI Tutor -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <div class="lg:col-span-2 glass-card rounded-2xl p-6 shadow-lg">
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">เรียนต่อจากที่ค้างไว้</h2>
-                    <div class="bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl p-6 text-white relative overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl p-6 text-white relative overflow-hidden">
                         <div class="relative z-10">
-                            <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm mb-3">หน่วยที่ 3</span>
-                            <h3 class="text-xl font-bold mb-2">กฎการเคลื่อนที่ของนิวตัน ข้อที่ 2</h3>
-                            <p class="text-white/80 mb-4">เรียนรู้ความสัมพันธ์ระหว่างแรง มวล และความเร่ง</p>
+                            <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm mb-3">บทที่ 3</span>
+                            <h3 class="text-xl font-bold mb-2">แรงและกฎการเคลื่อนที่</h3>
+                            <p class="text-white/80 mb-4">เรียนรู้แรง กฎการเคลื่อนที่ของนิวตัน และแรงเสียดทาน</p>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4">
                                     <div class="w-32 h-2 bg-white/20 rounded-full">
@@ -194,7 +184,7 @@
                                     </div>
                                     <span>65%</span>
                                 </div>
-                                <button @click="currentPage = 'lessons'; selectedLesson = lessons[2]" class="px-6 py-2 bg-white text-primary-600 rounded-lg font-semibold hover:bg-white/90 transition-all">เรียนต่อ</button>
+                                <button @click="selectChapter(chapters[2])" class="px-6 py-2 bg-white text-emerald-600 rounded-lg font-semibold hover:bg-white/90 transition-all">เรียนต่อ</button>
                             </div>
                         </div>
                     </div>
@@ -214,226 +204,370 @@
                 </div>
             </div>
 
+            <!-- All Chapters -->
             <div class="glass-card rounded-2xl p-6 shadow-lg">
-                <h2 class="text-lg font-semibold text-slate-800 mb-4">บทเรียนทั้งหมด</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <template x-for="(lesson, index) in lessons.slice(0, 6)" :key="index">
-                        <div @click="currentPage = 'lessons'; selectedLesson = lesson" class="p-4 border border-slate-200 rounded-xl hover:border-primary-300 hover:shadow-md transition-all cursor-pointer">
+                <h2 class="text-lg font-semibold text-slate-800 mb-4">บทเรียนทั้งหมด (ฟิสิกส์ ม.4)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <template x-for="chapter in chapters" :key="chapter.id">
+                        <div @click="selectChapter(chapter)" class="p-5 border border-slate-200 rounded-xl hover:border-primary-300 hover:shadow-md transition-all cursor-pointer lesson-card">
                             <div class="flex items-start justify-between mb-3">
-                                <div :class="lesson.color" class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold" x-text="index + 1"></div>
-                                <span :class="lesson.status === 'completed' ? 'bg-green-100 text-green-700' : lesson.status === 'in_progress' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-slate-500'" class="px-2 py-1 rounded-full text-xs font-medium" x-text="lesson.status === 'completed' ? 'เรียนจบแล้ว' : lesson.status === 'in_progress' ? 'กำลังเรียน' : 'ยังไม่เริ่ม'"></span>
+                                <div :class="getChapterColor(chapter.id)" class="w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-bold" x-text="chapter.id"></div>
+                                <span :class="chapter.status === 'completed' ? 'bg-green-100 text-green-700' : chapter.status === 'in_progress' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-slate-500'" class="px-2 py-1 rounded-full text-xs font-medium" x-text="chapter.status === 'completed' ? 'เรียนจบแล้ว' : chapter.status === 'in_progress' ? 'กำลังเรียน' : 'ยังไม่เริ่ม'"></span>
                             </div>
-                            <h3 class="font-semibold text-slate-800 mb-1" x-text="lesson.title"></h3>
-                            <p class="text-sm text-slate-500 mb-3" x-text="lesson.description"></p>
+                            <h3 class="font-semibold text-slate-800 mb-1" x-text="chapter.title"></h3>
+                            <p class="text-sm text-slate-500 mb-3" x-text="chapter.description"></p>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-400" x-text="chapter.topics.length + ' หัวข้อ'"></span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-20 h-1.5 bg-slate-100 rounded-full">
+                                        <div :style="`width: ${chapter.progress}%`" :class="getProgressColor(chapter.progress)" class="h-full rounded-full transition-all"></div>
+                                    </div>
+                                    <span class="text-slate-600 font-medium" x-text="chapter.progress + '%'"></span>
+                                </div>
+                            </div>
                         </div>
                     </template>
                 </div>
             </div>
         </div>
 
-        <!-- Lessons Page -->
-        <div x-show="currentPage === 'lessons'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div x-show="selectedLesson" class="mb-6">
-                <button @click="selectedLesson = null" class="flex items-center text-slate-500 hover:text-slate-700">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    กลับ
-                </button>
-            </div>
+        <!-- Lessons Page (Chapter List) -->
+        <div x-show="currentPage === 'lessons' && userRole === 'student'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">บทเรียนทั้งหมด</h1>
+            <p class="text-slate-500 mb-8">หลักสูตรฟิสิกส์ ม.4 ตามมาตรฐาน สสวท.</p>
 
-            <div x-show="!selectedLesson">
-                <h1 class="text-3xl font-bold text-slate-800 mb-8">บทเรียนทั้งหมด</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="(lesson, index) in lessons" :key="index">
-                        <div @click="selectedLesson = lesson" class="glass-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer">
-                            <div :class="lesson.color" class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl font-bold mb-4" x-text="index + 1"></div>
-                            <h3 class="text-xl font-bold text-slate-800 mb-2" x-text="lesson.title"></h3>
-                            <p class="text-slate-500 mb-4" x-text="lesson.description"></p>
-                            <div class="w-full h-2 bg-slate-100 rounded-full">
-                                <div :style="`width: ${lesson.progress}%`" class="h-full bg-primary-500 rounded-full"></div>
+            <div class="space-y-6">
+                <template x-for="chapter in chapters" :key="chapter.id">
+                    <div class="glass-card rounded-2xl shadow-lg overflow-hidden">
+                        <!-- Chapter Header -->
+                        <div :class="getChapterColor(chapter.id)" class="p-6 text-white">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center text-2xl font-bold" x-text="chapter.id"></div>
+                                    <div>
+                                        <h2 class="text-xl font-bold" x-text="'บทที่ ' + chapter.id + ': ' + chapter.title"></h2>
+                                        <p class="text-white/80" x-text="chapter.description"></p>
+                                    </div>
+                                </div>
+                                <div class="text-right hidden sm:block">
+                                    <p class="text-3xl font-bold" x-text="chapter.progress + '%'"></p>
+                                    <p class="text-sm text-white/70">ความคืบหน้า</p>
+                                </div>
                             </div>
                         </div>
-                    </template>
-                </div>
+
+                        <!-- Topics List -->
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <template x-for="topic in chapter.topics" :key="topic.id">
+                                    <div @click="selectedChapter = chapter; selectTopic(topic)" class="p-4 border border-slate-200 rounded-xl hover:border-primary-300 hover:bg-primary-50 transition-all cursor-pointer flex items-center space-x-3">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium"
+                                             :class="topic.status === 'completed' ? 'bg-green-100 text-green-600' : topic.status === 'in_progress' ? 'bg-yellow-100 text-yellow-600' : 'bg-slate-100 text-slate-400'">
+                                            <span x-text="getTopicStatusIcon(topic.status)"></span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-slate-800" x-text="topic.id + ' ' + topic.title"></p>
+                                            <p class="text-xs text-slate-400" x-text="topic.subtopics.length > 0 ? topic.subtopics.length + ' หัวข้อย่อย' : ''"></p>
+                                        </div>
+                                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Chapter Actions -->
+                            <div class="flex gap-3 mt-6 pt-6 border-t border-slate-200">
+                                <button @click="selectChapter(chapter)" class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">ดูรายละเอียดบท</button>
+                                <button @click="startQuiz(chapter)" class="flex-1 py-3 border-2 border-primary-500 text-primary-600 rounded-xl font-semibold hover:bg-primary-50 transition-all">ทำแบบฝึกหัด</button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Lesson Detail Page -->
+        <div x-show="currentPage === 'lesson-detail' && selectedChapter" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6 flex items-center space-x-2 text-sm">
+                <button @click="currentPage = 'lessons'; selectedChapter = null" class="text-slate-500 hover:text-primary-600">บทเรียน</button>
+                <span class="text-slate-400">/</span>
+                <span class="text-slate-800 font-medium" x-text="'บทที่ ' + selectedChapter?.id"></span>
             </div>
 
-            <div x-show="selectedLesson" class="slide-in">
-                <div class="glass-card rounded-2xl shadow-lg overflow-hidden">
-                    <div class="gradient-bg p-8 text-white">
-                        <span class="inline-block px-4 py-1 bg-white/20 rounded-full text-sm mb-4" x-text="'หน่วยที่ ' + (lessons.indexOf(selectedLesson) + 1)"></span>
-                        <h1 class="text-3xl font-bold mb-2" x-text="selectedLesson?.title"></h1>
-                        <p class="text-white/80" x-text="selectedLesson?.description"></p>
-                    </div>
-                    <div class="p-8">
-                        <div class="mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Chapter Header -->
+                    <div class="glass-card rounded-2xl shadow-lg overflow-hidden">
+                        <div :class="getChapterColor(selectedChapter?.id)" class="p-8 text-white">
+                            <span class="inline-block px-4 py-1 bg-white/20 rounded-full text-sm mb-4" x-text="'บทที่ ' + selectedChapter?.id"></span>
+                            <h1 class="text-3xl font-bold mb-2" x-text="selectedChapter?.title"></h1>
+                            <p class="text-white/80" x-text="selectedChapter?.description"></p>
+                        </div>
+                        <div class="p-6">
+                            <!-- Learning Objectives -->
                             <h2 class="text-xl font-bold text-slate-800 mb-4">จุดประสงค์การเรียนรู้</h2>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="p-4 bg-blue-50 rounded-xl"><h3 class="font-semibold text-blue-700 mb-2">K - ความรู้</h3><p class="text-sm text-blue-600" x-text="selectedLesson?.objectives?.knowledge"></p></div>
-                                <div class="p-4 bg-green-50 rounded-xl"><h3 class="font-semibold text-green-700 mb-2">P - ทักษะ</h3><p class="text-sm text-green-600" x-text="selectedLesson?.objectives?.process"></p></div>
-                                <div class="p-4 bg-purple-50 rounded-xl"><h3 class="font-semibold text-purple-700 mb-2">A - เจตคติ</h3><p class="text-sm text-purple-600" x-text="selectedLesson?.objectives?.attitude"></p></div>
+                                <div class="p-4 bg-blue-50 rounded-xl">
+                                    <h3 class="font-semibold text-blue-700 mb-2">K - ความรู้</h3>
+                                    <p class="text-sm text-blue-600" x-text="selectedChapter?.objectives?.knowledge"></p>
+                                </div>
+                                <div class="p-4 bg-green-50 rounded-xl">
+                                    <h3 class="font-semibold text-green-700 mb-2">P - ทักษะ</h3>
+                                    <p class="text-sm text-green-600" x-text="selectedChapter?.objectives?.process"></p>
+                                </div>
+                                <div class="p-4 bg-purple-50 rounded-xl">
+                                    <h3 class="font-semibold text-purple-700 mb-2">A - เจตคติ</h3>
+                                    <p class="text-sm text-purple-600" x-text="selectedChapter?.objectives?.attitude"></p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mb-8">
-                            <h2 class="text-xl font-bold text-slate-800 mb-4">สาระสำคัญ</h2>
-                            <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200">
-                                <p class="text-slate-700 text-lg" x-text="selectedLesson?.keyConcept"></p>
+                    </div>
+
+                    <!-- Topics List -->
+                    <div class="glass-card rounded-2xl p-6 shadow-lg">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">เนื้อหาในบทนี้</h2>
+                        <div class="space-y-3">
+                            <template x-for="topic in selectedChapter?.topics" :key="topic.id">
+                                <div @click="selectTopic(topic)" class="p-4 border border-slate-200 rounded-xl hover:border-primary-300 hover:bg-primary-50 transition-all cursor-pointer">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-semibold"
+                                                 :class="topic.status === 'completed' ? 'bg-green-100 text-green-600' : topic.status === 'in_progress' ? 'bg-yellow-100 text-yellow-600' : 'bg-slate-100 text-slate-500'">
+                                                <span x-text="topic.id"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-slate-800" x-text="topic.title"></p>
+                                                <p class="text-sm text-slate-500" x-text="topic.subtopics.length > 0 ? topic.subtopics.length + ' หัวข้อย่อย' : 'ไม่มีหัวข้อย่อย'"></p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <div class="text-right hidden sm:block">
+                                                <p class="text-sm font-medium" :class="topic.status === 'completed' ? 'text-green-600' : topic.status === 'in_progress' ? 'text-yellow-600' : 'text-slate-400'" x-text="topic.status === 'completed' ? 'เรียนจบแล้ว' : topic.status === 'in_progress' ? 'กำลังเรียน' : 'ยังไม่เริ่ม'"></p>
+                                            </div>
+                                            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Progress Card -->
+                    <div class="glass-card rounded-2xl p-6 shadow-lg">
+                        <h3 class="font-semibold text-slate-800 mb-4">ความคืบหน้าของคุณ</h3>
+                        <div class="relative w-32 h-32 mx-auto mb-4">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="64" cy="64" r="56" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+                                <circle cx="64" cy="64" r="56" fill="none" stroke="url(#gradient)" stroke-width="12" stroke-linecap="round" :stroke-dasharray="351.86" :stroke-dashoffset="351.86 - (351.86 * selectedChapter?.progress / 100)"/>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#3b82f6"/>
+                                        <stop offset="100%" stop-color="#8b5cf6"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-2xl font-bold text-slate-800" x-text="selectedChapter?.progress + '%'"></span>
                             </div>
                         </div>
-                        <div x-show="selectedLesson?.formula" class="mb-8">
-                            <h2 class="text-xl font-bold text-slate-800 mb-4">สูตรที่ใช้</h2>
-                            <div class="p-8 bg-slate-900 rounded-xl text-center">
-                                <p class="text-4xl font-bold text-white font-mono" x-text="selectedLesson?.formula"></p>
-                                <p class="text-slate-400 mt-4" x-text="selectedLesson?.formulaDescription"></p>
-                            </div>
+                        <div class="text-center text-sm text-slate-500">
+                            <span x-text="selectedChapter?.topics.filter(t => t.status === 'completed').length"></span>/<span x-text="selectedChapter?.topics.length"></span> หัวข้อเสร็จแล้ว
                         </div>
-                        <div class="flex gap-4">
-                            <button @click="currentPage = 'practice'" class="flex-1 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold">เริ่มทำแบบฝึกหัด</button>
-                            <button @click="currentPage = 'ai-tutor'" class="flex-1 py-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white rounded-xl font-semibold">ถาม AI Tutor</button>
-                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="glass-card rounded-2xl p-6 shadow-lg space-y-3">
+                        <button @click="startQuiz(selectedChapter)" class="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                            <span>ทำแบบฝึกหัด</span>
+                        </button>
+                        <button @click="currentPage = 'ai-tutor'" class="w-full py-3 bg-gradient-to-r from-accent-500 to-accent-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                            <span>ถาม AI Tutor</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Practice Page with AI Hints -->
-        <div x-show="currentPage === 'practice'" x-cloak class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-slate-800 mb-2">แบบฝึกหัด</h1>
-            <p class="text-slate-500 mb-8">ทดสอบความเข้าใจของคุณ</p>
+        <!-- Topic Detail Page -->
+        <div x-show="currentPage === 'topic-detail' && selectedTopic" x-cloak class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="mb-6 flex items-center space-x-2 text-sm">
+                <button @click="currentPage = 'lessons'; selectedChapter = null; selectedTopic = null" class="text-slate-500 hover:text-primary-600">บทเรียน</button>
+                <span class="text-slate-400">/</span>
+                <button @click="goBack()" class="text-slate-500 hover:text-primary-600" x-text="'บทที่ ' + selectedChapter?.id"></button>
+                <span class="text-slate-400">/</span>
+                <span class="text-slate-800 font-medium" x-text="selectedTopic?.id"></span>
+            </div>
 
             <div class="glass-card rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-4 bg-slate-50 border-b">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-slate-600">ข้อ <span x-text="currentQuestion + 1"></span> จาก <span x-text="quizQuestions.length"></span></span>
-                        <span class="text-sm font-medium text-primary-600" x-text="Math.round(((currentQuestion) / quizQuestions.length) * 100) + '% เสร็จสิ้น'"></span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-200 rounded-full">
-                        <div :style="`width: ${((currentQuestion) / quizQuestions.length) * 100}%`" class="h-full bg-primary-500 rounded-full transition-all"></div>
-                    </div>
+                <div :class="getChapterColor(selectedChapter?.id)" class="p-6 text-white">
+                    <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm mb-3" x-text="'หัวข้อ ' + selectedTopic?.id"></span>
+                    <h1 class="text-2xl font-bold" x-text="selectedTopic?.title"></h1>
                 </div>
 
-                <div class="p-8">
-                    <div class="mb-6">
-                        <span class="inline-block px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium mb-4" x-text="quizQuestions[currentQuestion]?.topic"></span>
-                        <h2 class="text-xl font-semibold text-slate-800" x-text="quizQuestions[currentQuestion]?.question"></h2>
+                <div class="p-6 space-y-6">
+                    <!-- Content -->
+                    <div class="p-6 bg-yellow-50 rounded-xl border border-yellow-200">
+                        <h3 class="font-semibold text-slate-800 mb-2">สาระสำคัญ</h3>
+                        <p class="text-slate-700" x-text="selectedTopic?.content"></p>
                     </div>
 
-                    <!-- AI Hint Button -->
-                    <div class="mb-6">
-                        <button @click="showHint = !showHint; if(showHint && !currentHint) getAIHint()"
-                                class="flex items-center space-x-2 px-4 py-2 bg-accent-100 text-accent-700 rounded-lg hover:bg-accent-200 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                            </svg>
-                            <span x-text="showHint ? 'ซ่อนคำใบ้' : 'ขอคำใบ้จาก AI'"></span>
-                        </button>
+                    <!-- Formula -->
+                    <div x-show="selectedTopic?.formula" class="p-8 bg-slate-900 rounded-xl text-center">
+                        <p class="text-4xl font-bold text-white font-mono" x-text="selectedTopic?.formula"></p>
+                        <p class="text-slate-400 mt-4" x-text="selectedTopic?.formulaDescription"></p>
                     </div>
 
-                    <!-- AI Hint Box -->
-                    <div x-show="showHint" x-cloak class="mb-6 p-4 bg-gradient-to-r from-accent-50 to-purple-50 border border-accent-200 rounded-xl slide-in">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center shrink-0">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-accent-800 mb-1">AI Tutor แนะนำ</h4>
-                                <p x-show="isLoadingHint" class="text-accent-600">กำลังคิด...</p>
-                                <p x-show="!isLoadingHint" class="text-accent-700 whitespace-pre-wrap" x-text="currentHint"></p>
-                            </div>
+                    <!-- Subtopics -->
+                    <div x-show="selectedTopic?.subtopics?.length > 0">
+                        <h3 class="font-semibold text-slate-800 mb-3">หัวข้อย่อย</h3>
+                        <div class="space-y-2">
+                            <template x-for="sub in selectedTopic?.subtopics" :key="sub.id">
+                                <div class="p-3 bg-slate-50 rounded-lg flex items-center space-x-3">
+                                    <span class="text-slate-500 font-mono text-sm" x-text="sub.id"></span>
+                                    <span class="text-slate-700" x-text="sub.title"></span>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
+                    <!-- Actions -->
+                    <div class="flex gap-4 pt-4 border-t border-slate-200">
+                        <button @click="goBack()" class="flex-1 py-3 border-2 border-slate-300 text-slate-600 rounded-xl font-semibold hover:bg-slate-50 transition-all">กลับ</button>
+                        <button @click="startQuiz(selectedChapter)" class="flex-1 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">ทำแบบฝึกหัด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice/Quiz Page -->
+        <div x-show="currentPage === 'practice'" x-cloak class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <button @click="goBack()" class="flex items-center text-slate-500 hover:text-slate-700 mb-6">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                กลับ
+            </button>
+
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">แบบฝึกหัด</h1>
+            <p class="text-slate-500 mb-8" x-text="'บทที่ ' + selectedChapter?.id + ': ' + selectedChapter?.title"></p>
+
+            <template x-if="currentQuiz && currentQuiz.length > 0">
+                <div class="glass-card rounded-2xl p-8 shadow-lg">
+                    <!-- Progress -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-slate-500" x-text="'ข้อ ' + (currentQuestion + 1) + '/' + currentQuiz.length"></span>
+                        <span class="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium" x-text="currentQuiz[currentQuestion]?.topic"></span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full mb-8">
+                        <div class="h-full bg-primary-500 rounded-full transition-all" :style="`width: ${((currentQuestion + 1) / currentQuiz.length) * 100}%`"></div>
+                    </div>
+
+                    <!-- Question -->
+                    <h2 class="text-xl font-semibold text-slate-800 mb-6" x-text="currentQuiz[currentQuestion]?.question"></h2>
+
+                    <!-- AI Hint -->
+                    <div class="mb-6">
+                        <button @click="getAIHint()" x-show="!showHint && !showAnswer" class="flex items-center space-x-2 text-accent-600 hover:text-accent-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                            <span x-text="isLoadingHint ? 'กำลังคิด...' : 'ขอคำใบ้จาก AI'"></span>
+                        </button>
+                        <div x-show="showHint" class="p-4 bg-accent-50 border border-accent-200 rounded-xl">
+                            <p class="text-sm text-accent-700"><strong>AI Hint:</strong> <span x-text="currentHint"></span></p>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
                     <div class="space-y-3 mb-8">
-                        <template x-for="(option, index) in quizQuestions[currentQuestion]?.options" :key="index">
+                        <template x-for="(option, index) in currentQuiz[currentQuestion]?.options" :key="index">
                             <button @click="selectAnswer(index)"
                                     :class="{
                                         'border-primary-500 bg-primary-50': selectedAnswer === index && !showAnswer,
-                                        'border-green-500 bg-green-50': showAnswer && index === quizQuestions[currentQuestion]?.correct,
-                                        'border-red-500 bg-red-50': showAnswer && selectedAnswer === index && index !== quizQuestions[currentQuestion]?.correct,
-                                        'border-slate-200 hover:border-primary-300': selectedAnswer !== index && !showAnswer
+                                        'border-green-500 bg-green-50': showAnswer && index === currentQuiz[currentQuestion]?.correct,
+                                        'border-red-500 bg-red-50': showAnswer && selectedAnswer === index && index !== currentQuiz[currentQuestion]?.correct,
+                                        'border-slate-200 hover:border-primary-300': !showAnswer && selectedAnswer !== index
                                     }"
-                                    class="w-full p-4 text-left border-2 rounded-xl transition-all flex items-center space-x-4">
-                                <span :class="{
-                                        'bg-primary-500 text-white': selectedAnswer === index && !showAnswer,
-                                        'bg-green-500 text-white': showAnswer && index === quizQuestions[currentQuestion]?.correct,
-                                        'bg-red-500 text-white': showAnswer && selectedAnswer === index && index !== quizQuestions[currentQuestion]?.correct,
-                                        'bg-slate-100': selectedAnswer !== index && !showAnswer
-                                    }" class="w-8 h-8 rounded-full flex items-center justify-center font-medium" x-text="['ก', 'ข', 'ค', 'ง'][index]"></span>
+                                    class="w-full p-4 text-left border-2 rounded-xl transition-all flex items-center space-x-3"
+                                    :disabled="showAnswer">
+                                <span class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-medium"
+                                      :class="{
+                                          'border-primary-500 text-primary-600 bg-primary-100': selectedAnswer === index && !showAnswer,
+                                          'border-green-500 text-green-600 bg-green-100': showAnswer && index === currentQuiz[currentQuestion]?.correct,
+                                          'border-red-500 text-red-600 bg-red-100': showAnswer && selectedAnswer === index && index !== currentQuiz[currentQuestion]?.correct,
+                                          'border-slate-300 text-slate-500': (!showAnswer && selectedAnswer !== index) || (showAnswer && index !== currentQuiz[currentQuestion]?.correct && selectedAnswer !== index)
+                                      }"
+                                      x-text="['ก', 'ข', 'ค', 'ง'][index]">
+                                </span>
                                 <span class="text-slate-700" x-text="option"></span>
                             </button>
                         </template>
                     </div>
 
-                    <!-- Explanation with AI -->
+                    <!-- Explanation -->
                     <div x-show="showAnswer" class="p-4 bg-blue-50 border border-blue-200 rounded-xl mb-6 slide-in">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-blue-800 mb-1">คำอธิบาย</h4>
-                                <p class="text-blue-700" x-text="quizQuestions[currentQuestion]?.explanation"></p>
-                            </div>
-                        </div>
+                        <p class="text-blue-700"><strong>อธิบาย:</strong> <span x-text="currentQuiz[currentQuestion]?.explanation"></span></p>
                     </div>
 
+                    <!-- Actions -->
                     <div class="flex gap-4">
-                        <button x-show="!showAnswer && selectedAnswer !== null" @click="checkAnswer()" class="flex-1 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold">ตรวจคำตอบ</button>
-                        <button x-show="showAnswer" @click="nextQuestion()" class="flex-1 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold" x-text="currentQuestion < quizQuestions.length - 1 ? 'ข้อถัดไป' : 'ดูผลคะแนน'"></button>
+                        <button x-show="!showAnswer" @click="checkAnswer()" :disabled="selectedAnswer === null" class="flex-1 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transition-all">ตรวจคำตอบ</button>
+                        <button x-show="showAnswer" @click="nextQuestion()" class="flex-1 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all" x-text="currentQuestion < currentQuiz.length - 1 ? 'ข้อถัดไป' : 'ดูผลลัพธ์'"></button>
                     </div>
                 </div>
-            </div>
+            </template>
         </div>
 
         <!-- AI Tutor Page -->
-        <div x-show="currentPage === 'ai-tutor'" x-cloak class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-8rem)] flex flex-col">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-800">AI Tutor</h1>
-                    <p class="text-slate-500">ผู้ช่วยการเรียนรู้ฟิสิกส์แบบโซเครติส</p>
+        <div x-show="currentPage === 'ai-tutor'" x-cloak class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-10rem)]">
+            <div class="glass-card rounded-2xl shadow-lg h-full flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-slate-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        </div>
+                        <div>
+                            <h2 class="font-semibold text-slate-800">AI Tutor</h2>
+                            <p class="text-xs text-green-500">ออนไลน์</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2 px-3 py-1 bg-green-100 text-green-700 rounded-full">
-                    <div class="w-2 h-2 bg-green-500 rounded-full pulse-animation"></div>
-                    <span class="text-sm font-medium">ออนไลน์</span>
-                </div>
-            </div>
 
-            <div class="flex-1 glass-card rounded-2xl shadow-lg flex flex-col overflow-hidden">
-                <div class="flex-1 overflow-y-auto p-6 space-y-4" id="chatContainer">
-                    <template x-for="(message, index) in chatMessages" :key="index">
-                        <div :class="message.role === 'user' ? 'flex justify-end' : 'flex justify-start'" class="slide-in">
-                            <div :class="message.role === 'user' ? 'chat-bubble-user text-white' : 'chat-bubble-ai text-slate-700'" class="max-w-[80%] p-4 rounded-2xl">
-                                <p class="whitespace-pre-wrap" x-text="message.content"></p>
-                            </div>
+                <!-- Chat Messages -->
+                <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <template x-for="(msg, index) in chatMessages" :key="index">
+                        <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'" class="slide-in">
+                            <div :class="msg.role === 'user' ? 'chat-bubble-user text-white' : 'chat-bubble-ai text-slate-700'" class="max-w-[80%] p-4 rounded-2xl whitespace-pre-wrap" x-text="msg.content"></div>
                         </div>
                     </template>
                     <div x-show="isTyping" class="flex justify-start">
                         <div class="chat-bubble-ai p-4 rounded-2xl">
-                            <div class="flex space-x-2">
-                                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
-                                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                                <div class="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                            <div class="flex space-x-1">
+                                <div class="w-2 h-2 bg-slate-400 rounded-full pulse-animation"></div>
+                                <div class="w-2 h-2 bg-slate-400 rounded-full pulse-animation" style="animation-delay: 0.2s"></div>
+                                <div class="w-2 h-2 bg-slate-400 rounded-full pulse-animation" style="animation-delay: 0.4s"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div x-show="chatMessages.length <= 1" class="px-6 pb-4">
-                    <p class="text-sm text-slate-500 mb-3">คำถามแนะนำ:</p>
+                <!-- Suggested Questions -->
+                <div class="p-3 border-t border-slate-100">
                     <div class="flex flex-wrap gap-2">
-                        <button @click="sendSuggestedQuestion('F = ma หมายความว่าอย่างไร?')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm">F = ma หมายความว่าอย่างไร?</button>
-                        <button @click="sendSuggestedQuestion('ทำไมวัตถุหนักกว่าไม่ได้ตกเร็วกว่า?')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm">ทำไมวัตถุหนักกว่าไม่ได้ตกเร็วกว่า?</button>
+                        <button @click="sendSuggestedQuestion('อธิบาย F = ma หน่อย')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-full text-sm text-slate-600 transition-all">F = ma คืออะไร?</button>
+                        <button @click="sendSuggestedQuestion('ยกตัวอย่างฟิสิกส์ในชีวิตจริง')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-full text-sm text-slate-600 transition-all">ตัวอย่างในชีวิตจริง</button>
+                        <button @click="sendSuggestedQuestion('การตกแบบเสรีคืออะไร')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-full text-sm text-slate-600 transition-all">การตกแบบเสรี</button>
                     </div>
                 </div>
 
-                <div class="p-4 border-t">
-                    <div class="flex items-center space-x-3">
-                        <input type="text" x-model="userMessage" @keydown.enter="sendMessage()" placeholder="พิมพ์คำถาม..." class="flex-1 px-4 py-3 bg-slate-100 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white">
-                        <button @click="sendMessage()" :disabled="!userMessage.trim()" :class="userMessage.trim() ? 'bg-gradient-to-r from-primary-500 to-primary-600' : 'bg-slate-300'" class="p-3 text-white rounded-xl">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        </button>
+                <!-- Input -->
+                <div class="p-4 border-t border-slate-200">
+                    <div class="flex space-x-3">
+                        <input x-model="userMessage" @keydown.enter="sendMessage()" type="text" placeholder="ถามคำถามได้เลย..." class="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <button @click="sendMessage()" class="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-xl font-medium hover:shadow-lg transition-all">ส่ง</button>
                     </div>
                 </div>
             </div>
@@ -442,89 +576,83 @@
         <!-- ==================== TEACHER PAGES ==================== -->
 
         <!-- Teacher Dashboard -->
-        <div x-show="currentPage === 'teacher-dashboard'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div x-show="currentPage === 'teacher-dashboard' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-slate-800">ภาพรวมห้องเรียน</h1>
-                <p class="text-slate-500 mt-1">วิชาฟิสิกส์พื้นฐาน ม.4/1</p>
+                <h1 class="text-3xl font-bold text-slate-800">ภาพรวมชั้นเรียน</h1>
+                <p class="text-slate-500 mt-1">ฟิสิกส์ ม.4/1</p>
             </div>
 
             <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass-card rounded-2xl p-6 shadow-lg border-l-4 border-green-500">
-                    <p class="text-slate-500 text-sm">จำนวนนักเรียน</p>
-                    <p class="text-3xl font-bold text-slate-800 mt-1">35 คน</p>
-                    <p class="text-sm text-green-600 mt-2">ออนไลน์ 28 คน</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
+                    <p class="text-slate-500 text-sm">นักเรียนทั้งหมด</p>
+                    <p class="text-2xl font-bold text-slate-800 mt-1" x-text="students.length + ' คน'"></p>
                 </div>
-                <div class="glass-card rounded-2xl p-6 shadow-lg border-l-4 border-blue-500">
-                    <p class="text-slate-500 text-sm">คะแนนเฉลี่ยห้อง</p>
-                    <p class="text-3xl font-bold text-slate-800 mt-1">72.5%</p>
-                    <p class="text-sm text-blue-600 mt-2">+5% จากสัปดาห์ที่แล้ว</p>
-                </div>
-                <div class="glass-card rounded-2xl p-6 shadow-lg border-l-4 border-yellow-500">
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
                     <p class="text-slate-500 text-sm">ความคืบหน้าเฉลี่ย</p>
-                    <p class="text-3xl font-bold text-slate-800 mt-1">58%</p>
-                    <p class="text-sm text-yellow-600 mt-2">บทที่ 3 จาก 6</p>
+                    <p class="text-2xl font-bold text-green-600 mt-1">68%</p>
                 </div>
-                <div class="glass-card rounded-2xl p-6 shadow-lg border-l-4 border-red-500">
-                    <p class="text-slate-500 text-sm">นักเรียนที่ต้องดูแล</p>
-                    <p class="text-3xl font-bold text-slate-800 mt-1">5 คน</p>
-                    <p class="text-sm text-red-600 mt-2">คะแนนต่ำกว่า 50%</p>
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
+                    <p class="text-slate-500 text-sm">ต้องดูแลพิเศษ</p>
+                    <p class="text-2xl font-bold text-red-600 mt-1" x-text="students.filter(s => s.status === 'at_risk').length + ' คน'"></p>
+                </div>
+                <div class="glass-card rounded-2xl p-5 shadow-lg">
+                    <p class="text-slate-500 text-sm">Misconceptions พบ</p>
+                    <p class="text-2xl font-bold text-orange-600 mt-1" x-text="topMisconceptions.length + ' รูปแบบ'"></p>
                 </div>
             </div>
 
+            <!-- Progress by Chapter -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Progress Chart -->
                 <div class="glass-card rounded-2xl p-6 shadow-lg">
-                    <h2 class="text-lg font-semibold text-slate-800 mb-4">ความคืบหน้ารายบทเรียน</h2>
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4">ความคืบหน้าตามบท</h2>
                     <div class="space-y-4">
-                        <template x-for="(lesson, index) in lessonProgress" :key="index">
+                        <template x-for="(progress, index) in lessonProgress" :key="index">
                             <div>
                                 <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-slate-600" x-text="lesson.name"></span>
-                                    <span class="font-medium" x-text="lesson.completed + '/' + lesson.total + ' คน'"></span>
+                                    <span class="text-slate-600" x-text="progress.name"></span>
+                                    <span class="font-medium" x-text="progress.completed + '/' + progress.total + ' คน'"></span>
                                 </div>
                                 <div class="w-full h-3 bg-slate-100 rounded-full">
-                                    <div :style="`width: ${(lesson.completed/lesson.total)*100}%`" :class="lesson.completed/lesson.total > 0.7 ? 'bg-green-500' : lesson.completed/lesson.total > 0.4 ? 'bg-yellow-500' : 'bg-red-500'" class="h-full rounded-full transition-all"></div>
+                                    <div class="h-full bg-green-500 rounded-full transition-all" :style="`width: ${(progress.completed / progress.total) * 100}%`"></div>
                                 </div>
                             </div>
                         </template>
                     </div>
                 </div>
 
-                <!-- Common Misconceptions -->
                 <div class="glass-card rounded-2xl p-6 shadow-lg">
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">Misconceptions ที่พบบ่อย</h2>
                     <div class="space-y-3">
                         <template x-for="(item, index) in topMisconceptions" :key="index">
-                            <div class="p-4 bg-red-50 border border-red-100 rounded-xl">
-                                <div class="flex items-start justify-between">
-                                    <div>
-                                        <p class="font-medium text-red-800" x-text="item.misconception"></p>
-                                        <p class="text-sm text-red-600 mt-1" x-text="item.count + ' คนยังเข้าใจผิด'"></p>
-                                    </div>
-                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs" x-text="item.topic"></span>
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-xl">
+                                <div>
+                                    <p class="font-medium text-slate-800" x-text="item.misconception"></p>
+                                    <p class="text-sm text-slate-500" x-text="item.topic"></p>
                                 </div>
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full font-medium" x-text="item.count + ' คน'"></span>
                             </div>
                         </template>
                     </div>
-                    <button @click="currentPage = 'misconceptions'" class="w-full mt-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all">ดูทั้งหมด</button>
                 </div>
             </div>
 
-            <!-- Recent Activity -->
+            <!-- Recent Activities -->
             <div class="glass-card rounded-2xl p-6 shadow-lg">
-                <h2 class="text-lg font-semibold text-slate-800 mb-4">กิจกรรมล่าสุดของนักเรียน</h2>
+                <h2 class="text-lg font-semibold text-slate-800 mb-4">กิจกรรมล่าสุด</h2>
                 <div class="space-y-3">
                     <template x-for="(activity, index) in recentActivities" :key="index">
-                        <div class="flex items-center space-x-4 p-3 hover:bg-slate-50 rounded-lg">
-                            <img :src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + activity.student" class="w-10 h-10 rounded-full bg-slate-200">
-                            <div class="flex-1">
-                                <p class="font-medium text-slate-800" x-text="activity.student"></p>
-                                <p class="text-sm text-slate-500" x-text="activity.action"></p>
+                        <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl">
+                            <div class="flex items-center space-x-3">
+                                <img :src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + activity.student" alt="" class="w-10 h-10 rounded-full bg-slate-200">
+                                <div>
+                                    <p class="font-medium text-slate-800" x-text="activity.student"></p>
+                                    <p class="text-sm text-slate-500" x-text="activity.action"></p>
+                                </div>
                             </div>
                             <div class="text-right">
+                                <p x-show="activity.score" class="font-bold" :class="activity.score >= 80 ? 'text-green-600' : activity.score >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="activity.score + '%'"></p>
                                 <p class="text-sm text-slate-400" x-text="activity.time"></p>
-                                <span :class="activity.score >= 80 ? 'text-green-600' : activity.score >= 50 ? 'text-yellow-600' : 'text-red-600'" class="text-sm font-medium" x-text="activity.score ? activity.score + '%' : ''"></span>
                             </div>
                         </div>
                     </template>
@@ -533,270 +661,124 @@
         </div>
 
         <!-- Students List -->
-        <div x-show="currentPage === 'students-list'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-slate-800">รายชื่อนักเรียน</h1>
-                    <p class="text-slate-500 mt-1">ม.4/1 - 35 คน</p>
-                </div>
-                <div class="flex space-x-2">
-                    <input type="text" placeholder="ค้นหานักเรียน..." class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
-                    <select class="px-4 py-2 border rounded-lg">
-                        <option>ทั้งหมด</option>
-                        <option>คะแนนสูง</option>
-                        <option>ต้องดูแล</option>
-                    </select>
-                </div>
-            </div>
+        <div x-show="currentPage === 'students-list' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-8">รายชื่อนักเรียน</h1>
 
             <div class="glass-card rounded-2xl shadow-lg overflow-hidden">
-                <table class="w-full">
-                    <thead class="bg-slate-50 border-b">
-                        <tr>
-                            <th class="text-left p-4 font-semibold text-slate-600">นักเรียน</th>
-                            <th class="text-center p-4 font-semibold text-slate-600">ความคืบหน้า</th>
-                            <th class="text-center p-4 font-semibold text-slate-600">คะแนนเฉลี่ย</th>
-                            <th class="text-center p-4 font-semibold text-slate-600">เข้าเรียนล่าสุด</th>
-                            <th class="text-center p-4 font-semibold text-slate-600">สถานะ</th>
-                            <th class="text-center p-4 font-semibold text-slate-600">การดำเนินการ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template x-for="(student, index) in students" :key="index">
-                            <tr class="border-b hover:bg-slate-50">
-                                <td class="p-4">
-                                    <div class="flex items-center space-x-3">
-                                        <img :src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + student.name" class="w-10 h-10 rounded-full bg-slate-200">
-                                        <div>
-                                            <p class="font-medium text-slate-800" x-text="student.name"></p>
-                                            <p class="text-sm text-slate-500" x-text="'เลขที่ ' + student.id"></p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <div class="w-24 h-2 bg-slate-100 rounded-full">
-                                            <div :style="`width: ${student.progress}%`" class="h-full bg-green-500 rounded-full"></div>
-                                        </div>
-                                        <span class="text-sm" x-text="student.progress + '%'"></span>
-                                    </div>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <span :class="student.score >= 80 ? 'text-green-600' : student.score >= 50 ? 'text-yellow-600' : 'text-red-600'" class="font-semibold" x-text="student.score + '%'"></span>
-                                </td>
-                                <td class="p-4 text-center text-slate-500" x-text="student.lastActive"></td>
-                                <td class="p-4 text-center">
-                                    <span :class="student.status === 'active' ? 'bg-green-100 text-green-700' : student.status === 'at_risk' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'" class="px-3 py-1 rounded-full text-sm" x-text="student.status === 'active' ? 'ปกติ' : student.status === 'at_risk' ? 'ต้องดูแล' : 'ไม่เข้าเรียน'"></span>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <button @click="selectedStudent = student; currentPage = 'student-detail'" class="px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 text-sm">ดูรายละเอียด</button>
-                                </td>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">นักเรียน</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 1</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 2</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 3</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">เฉลี่ย</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">สถานะ</th>
                             </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Student Detail (for Teacher) -->
-        <div x-show="currentPage === 'student-detail'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <button @click="currentPage = 'students-list'" class="flex items-center text-slate-500 hover:text-slate-700 mb-6">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                กลับ
-            </button>
-
-            <div class="glass-card rounded-2xl p-6 shadow-lg mb-6">
-                <div class="flex items-center space-x-6">
-                    <img :src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + selectedStudent?.name" class="w-20 h-20 rounded-full bg-slate-200">
-                    <div class="flex-1">
-                        <h1 class="text-2xl font-bold text-slate-800" x-text="selectedStudent?.name"></h1>
-                        <p class="text-slate-500" x-text="'เลขที่ ' + selectedStudent?.id + ' | ม.4/1'"></p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-3xl font-bold" :class="selectedStudent?.score >= 80 ? 'text-green-600' : selectedStudent?.score >= 50 ? 'text-yellow-600' : 'text-red-600'" x-text="selectedStudent?.score + '%'"></p>
-                        <p class="text-slate-500">คะแนนเฉลี่ย</p>
-                    </div>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <template x-for="student in students" :key="student.id">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <img :src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + student.name" alt="" class="w-10 h-10 rounded-full bg-slate-200">
+                                            <div>
+                                                <p class="font-medium text-slate-800" x-text="student.name"></p>
+                                                <p class="text-sm text-slate-500" x-text="'เข้าใช้งานล่าสุด: ' + student.lastActive"></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="font-medium" :class="student.chapter1 >= 80 ? 'text-green-600' : student.chapter1 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter1 + '%'"></span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="font-medium" :class="student.chapter2 >= 80 ? 'text-green-600' : student.chapter2 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter2 + '%'"></span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="font-medium" :class="student.chapter3 >= 80 ? 'text-green-600' : student.chapter3 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter3 + '%'"></span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="font-bold text-slate-800" x-text="student.score + '%'"></span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span :class="getStatusColor(student.status)" class="px-3 py-1 rounded-full text-sm font-medium" x-text="getStatusText(student.status)"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Learning Progress -->
-                <div class="glass-card rounded-2xl p-6 shadow-lg">
-                    <h2 class="text-lg font-semibold text-slate-800 mb-4">ความคืบหน้ารายบทเรียน</h2>
-                    <div class="space-y-4">
-                        <template x-for="(lesson, index) in lessons" :key="index">
-                            <div class="flex items-center space-x-4">
-                                <div :class="lesson.color" class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" x-text="index + 1"></div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-slate-700" x-text="lesson.title"></p>
-                                    <div class="w-full h-2 bg-slate-100 rounded-full mt-1">
-                                        <div :style="`width: ${lesson.progress}%`" class="h-full bg-green-500 rounded-full"></div>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-medium" x-text="lesson.progress + '%'"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Misconceptions for this student -->
-                <div class="glass-card rounded-2xl p-6 shadow-lg">
-                    <h2 class="text-lg font-semibold text-slate-800 mb-4">Misconceptions ที่พบ</h2>
-                    <div class="space-y-3">
-                        <div class="p-4 bg-red-50 border border-red-100 rounded-xl">
-                            <p class="font-medium text-red-800">คิดว่าวัตถุหนักกว่าตกเร็วกว่า</p>
-                            <p class="text-sm text-red-600 mt-1">บทที่ 3 - กฎนิวตันข้อที่ 2</p>
-                            <p class="text-xs text-slate-500 mt-2">พบจากการทำแบบทดสอบ ข้อ 4</p>
-                        </div>
-                        <div class="p-4 bg-yellow-50 border border-yellow-100 rounded-xl">
-                            <p class="font-medium text-yellow-800">สับสนระหว่างความเร็วและความเร่ง</p>
-                            <p class="text-sm text-yellow-600 mt-1">บทที่ 2 - กฎนิวตันข้อที่ 1</p>
-                            <p class="text-xs text-slate-500 mt-2">พบจากการถาม AI Tutor</p>
-                        </div>
-                    </div>
-                    <div class="mt-4 p-4 bg-green-50 border border-green-100 rounded-xl">
-                        <h3 class="font-semibold text-green-800 mb-2">คำแนะนำจาก AI</h3>
-                        <p class="text-sm text-green-700">แนะนำให้นักเรียนทำการทดลองจริงเรื่องการตกอย่างเสรี และดู simulation ใน PhET เพื่อเข้าใจว่าความเร่งไม่ขึ้นกับมวล</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quiz History -->
-            <div class="glass-card rounded-2xl p-6 shadow-lg mt-6">
-                <h2 class="text-lg font-semibold text-slate-800 mb-4">ประวัติการทำแบบทดสอบ</h2>
-                <table class="w-full">
-                    <thead class="bg-slate-50">
-                        <tr>
-                            <th class="text-left p-3 font-semibold text-slate-600">บทเรียน</th>
-                            <th class="text-center p-3 font-semibold text-slate-600">วันที่</th>
-                            <th class="text-center p-3 font-semibold text-slate-600">คะแนน</th>
-                            <th class="text-center p-3 font-semibold text-slate-600">เวลาที่ใช้</th>
-                            <th class="text-center p-3 font-semibold text-slate-600">ใช้ AI Hint</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-b">
-                            <td class="p-3">กฎนิวตันข้อที่ 2</td>
-                            <td class="p-3 text-center text-slate-500">28 ก.พ. 2026</td>
-                            <td class="p-3 text-center"><span class="font-semibold text-yellow-600">60%</span></td>
-                            <td class="p-3 text-center text-slate-500">15 นาที</td>
-                            <td class="p-3 text-center"><span class="px-2 py-1 bg-accent-100 text-accent-700 rounded text-sm">3 ครั้ง</span></td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="p-3">กฎนิวตันข้อที่ 1</td>
-                            <td class="p-3 text-center text-slate-500">25 ก.พ. 2026</td>
-                            <td class="p-3 text-center"><span class="font-semibold text-green-600">85%</span></td>
-                            <td class="p-3 text-center text-slate-500">12 นาที</td>
-                            <td class="p-3 text-center"><span class="px-2 py-1 bg-accent-100 text-accent-700 rounded text-sm">1 ครั้ง</span></td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
 
         <!-- Assessment Page -->
-        <div x-show="currentPage === 'assessment'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-slate-800 mb-2">วัดและประเมินผล</h1>
-            <p class="text-slate-500 mb-8">ภาพรวมผลการเรียนรู้ของนักเรียนทั้งหมด</p>
+        <div x-show="currentPage === 'assessment' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-8">วัดและประเมินผล</h1>
 
-            <!-- Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 shadow-lg text-center">
                     <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl font-bold text-green-600">20</span>
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <p class="font-semibold text-slate-800">ผ่านเกณฑ์</p>
-                    <p class="text-sm text-slate-500">คะแนน 70% ขึ้นไป</p>
+                    <p class="text-3xl font-bold text-green-600">4</p>
+                    <p class="text-slate-500">ผ่านเกณฑ์</p>
                 </div>
                 <div class="glass-card rounded-2xl p-6 shadow-lg text-center">
                     <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl font-bold text-yellow-600">10</span>
+                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     </div>
-                    <p class="font-semibold text-slate-800">ใกล้ผ่าน</p>
-                    <p class="text-sm text-slate-500">คะแนน 50-69%</p>
+                    <p class="text-3xl font-bold text-yellow-600">2</p>
+                    <p class="text-slate-500">ต้องดูแล</p>
                 </div>
                 <div class="glass-card rounded-2xl p-6 shadow-lg text-center">
                     <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl font-bold text-red-600">5</span>
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                    <p class="font-semibold text-slate-800">ต้องปรับปรุง</p>
-                    <p class="text-sm text-slate-500">คะแนนต่ำกว่า 50%</p>
+                    <p class="text-3xl font-bold text-red-600">0</p>
+                    <p class="text-slate-500">ไม่ผ่าน</p>
                 </div>
             </div>
 
-            <!-- Detailed Assessment by Objective -->
-            <div class="glass-card rounded-2xl p-6 shadow-lg mb-6">
-                <h2 class="text-lg font-semibold text-slate-800 mb-4">ผลการประเมินตามจุดประสงค์ (K-P-A)</h2>
+            <div class="glass-card rounded-2xl p-6 shadow-lg">
+                <h2 class="text-lg font-semibold text-slate-800 mb-4">การประเมินตามจุดประสงค์ (KPA)</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-slate-50">
                             <tr>
-                                <th class="text-left p-3 font-semibold text-slate-600">บทเรียน</th>
-                                <th class="text-center p-3 font-semibold text-blue-600">K - ความรู้</th>
-                                <th class="text-center p-3 font-semibold text-green-600">P - ทักษะ</th>
-                                <th class="text-center p-3 font-semibold text-purple-600">A - เจตคติ</th>
-                                <th class="text-center p-3 font-semibold text-slate-600">รวม</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-slate-600">บทเรียน</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-blue-600">K - ความรู้</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-green-600">P - ทักษะ</th>
+                                <th class="px-4 py-3 text-center text-sm font-semibold text-purple-600">A - เจตคติ</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr class="border-b">
-                                <td class="p-3 font-medium">กฎนิวตันข้อที่ 1</td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full">85%</span></td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full">78%</span></td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full">90%</span></td>
-                                <td class="p-3 text-center font-bold text-green-600">84%</td>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr>
+                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 1 - ธรรมชาติและพัฒนาการทางฟิสิกส์</td>
+                                <td class="px-4 py-3 text-center text-blue-600 font-medium">85%</td>
+                                <td class="px-4 py-3 text-center text-green-600 font-medium">78%</td>
+                                <td class="px-4 py-3 text-center text-purple-600 font-medium">90%</td>
                             </tr>
-                            <tr class="border-b">
-                                <td class="p-3 font-medium">กฎนิวตันข้อที่ 2</td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">65%</span></td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">58%</span></td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full">75%</span></td>
-                                <td class="p-3 text-center font-bold text-yellow-600">66%</td>
+                            <tr>
+                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 2 - การเคลื่อนที่แนวตรง</td>
+                                <td class="px-4 py-3 text-center text-blue-600 font-medium">72%</td>
+                                <td class="px-4 py-3 text-center text-green-600 font-medium">68%</td>
+                                <td class="px-4 py-3 text-center text-purple-600 font-medium">85%</td>
                             </tr>
-                            <tr class="border-b">
-                                <td class="p-3 font-medium">กฎนิวตันข้อที่ 3</td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-red-100 text-red-700 rounded-full">45%</span></td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-red-100 text-red-700 rounded-full">40%</span></td>
-                                <td class="p-3 text-center"><span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">60%</span></td>
-                                <td class="p-3 text-center font-bold text-red-600">48%</td>
+                            <tr>
+                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 3 - แรงและกฎการเคลื่อนที่</td>
+                                <td class="px-4 py-3 text-center text-blue-600 font-medium">65%</td>
+                                <td class="px-4 py-3 text-center text-green-600 font-medium">58%</td>
+                                <td class="px-4 py-3 text-center text-purple-600 font-medium">75%</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- AI Recommendations -->
-            <div class="glass-card rounded-2xl p-6 shadow-lg">
-                <h2 class="text-lg font-semibold text-slate-800 mb-4">คำแนะนำจาก AI สำหรับการปรับปรุงการสอน</h2>
-                <div class="space-y-4">
-                    <div class="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-blue-800">กฎนิวตันข้อที่ 3 - ต้องเน้นย้ำ</h3>
-                                <p class="text-sm text-blue-700 mt-1">นักเรียนส่วนใหญ่ยังสับสนเรื่องคู่แรงกิริยา-ปฏิกิริยา แนะนำให้ใช้การทดลองจริงโดยให้นักเรียนผลักกันบนเก้าอี้ล้อ หรือใช้ลูกโป่งแสดงหลักการของจรวด</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-green-50 border border-green-100 rounded-xl">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-green-800">กฎนิวตันข้อที่ 1 - ผลดี</h3>
-                                <p class="text-sm text-green-700 mt-1">การใช้คลิปวิดีโอการเบรคกะทันหันได้ผลดีมาก นักเรียนเข้าใจความเฉื่อยได้ดี สามารถใช้แนวทางนี้กับบทอื่นได้</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Misconceptions Page -->
-        <div x-show="currentPage === 'misconceptions'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div x-show="currentPage === 'misconceptions' && userRole === 'teacher'" x-cloak class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold text-slate-800 mb-2">Misconceptions Analysis</h1>
             <p class="text-slate-500 mb-8">วิเคราะห์ความเข้าใจผิดที่พบในนักเรียน</p>
 
@@ -836,7 +818,7 @@
                         <div class="space-y-4">
                             <div class="flex justify-between">
                                 <span class="text-slate-600">พบทั้งหมด</span>
-                                <span class="font-bold text-slate-800">12 รูปแบบ</span>
+                                <span class="font-bold text-slate-800" x-text="allMisconceptions.length + ' รูปแบบ'"></span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-slate-600">นักเรียนที่มี misconception</span>
@@ -845,33 +827,6 @@
                             <div class="flex justify-between">
                                 <span class="text-slate-600">แก้ไขแล้ว</span>
                                 <span class="font-bold text-green-600">5 รูปแบบ</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card rounded-2xl p-6 shadow-lg">
-                        <h2 class="text-lg font-semibold text-slate-800 mb-4">Misconception ที่พบบ่อยที่สุด</h2>
-                        <div class="space-y-3">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold">1</div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-slate-700">วัตถุหนักตกเร็วกว่า</p>
-                                    <p class="text-xs text-slate-500">12 คน</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">2</div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-slate-700">แรง = ความเร็ว</p>
-                                    <p class="text-xs text-slate-500">8 คน</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold">3</div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-medium text-slate-700">ต้องมีแรงถึงจะเคลื่อนที่</p>
-                                    <p class="text-xs text-slate-500">6 คน</p>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -885,8 +840,8 @@
     <nav x-show="userRole" class="fixed bottom-0 left-0 right-0 bg-white border-t md:hidden z-50">
         <div class="flex justify-around py-2">
             <template x-if="userRole === 'student'">
-                <template x-for="item in [{page:'dashboard',icon:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',label:'หน้าหลัก'},{page:'lessons',icon:'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',label:'บทเรียน'},{page:'practice',icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',label:'แบบฝึกหัด'},{page:'ai-tutor',icon:'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',label:'AI'}]">
-                    <button @click="currentPage = item.page" :class="currentPage === item.page ? 'text-primary-600' : 'text-slate-400'" class="flex flex-col items-center py-2 px-3">
+                <template x-for="item in [{page:'dashboard',icon:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',label:'หน้าหลัก'},{page:'lessons',icon:'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',label:'บทเรียน'},{page:'ai-tutor',icon:'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',label:'AI'}]">
+                    <button @click="currentPage = item.page; selectedChapter = null" :class="currentPage === item.page || (item.page === 'lessons' && (currentPage === 'lesson-detail' || currentPage === 'topic-detail')) ? 'text-primary-600' : 'text-slate-400'" class="flex flex-col items-center py-2 px-3">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon"/></svg>
                         <span class="text-xs mt-1" x-text="item.label"></span>
                     </button>
@@ -902,161 +857,8 @@
         </div>
     </nav>
 
-    <script>
-        function app() {
-            return {
-                userRole: null,
-                currentPage: 'dashboard',
-                selectedLesson: null,
-                selectedStudent: null,
-                userMessage: '',
-                isTyping: false,
-                currentQuestion: 0,
-                selectedAnswer: null,
-                showAnswer: false,
-                score: 0,
-                showHint: false,
-                currentHint: '',
-                isLoadingHint: false,
-
-                // Mock Data
-                lessons: [
-                    { title: 'แรงและการเคลื่อนที่เบื้องต้น', description: 'เรียนรู้แนวคิดพื้นฐานเกี่ยวกับแรงและการเคลื่อนที่', duration: '45 นาที', topics: 5, progress: 100, status: 'completed', color: 'bg-gradient-to-br from-blue-400 to-blue-600', objectives: { knowledge: 'อธิบายความหมายของแรงและการเคลื่อนที่ได้', process: 'วิเคราะห์แรงที่กระทำต่อวัตถุได้', attitude: 'ตระหนักถึงความสำคัญของฟิสิกส์' }, keyConcept: 'แรงคือปริมาณที่ทำให้วัตถุเปลี่ยนสภาพการเคลื่อนที่ แรงเป็นปริมาณเวกเตอร์' },
-                    { title: 'กฎการเคลื่อนที่ของนิวตัน ข้อที่ 1', description: 'กฎความเฉื่อย', duration: '50 นาที', topics: 4, progress: 100, status: 'completed', color: 'bg-gradient-to-br from-green-400 to-green-600', objectives: { knowledge: 'อธิบายกฎข้อที่ 1 ได้', process: 'ทำนายการเคลื่อนที่เมื่อไม่มีแรงลัพธ์', attitude: 'เห็นคุณค่าของเข็มขัดนิรภัย' }, keyConcept: 'วัตถุจะรักษาสภาพการหยุดนิ่งหรือเคลื่อนที่ด้วยความเร็วคงตัว' },
-                    { title: 'กฎการเคลื่อนที่ของนิวตัน ข้อที่ 2', description: 'F = ma', duration: '55 นาที', topics: 6, progress: 65, status: 'in_progress', color: 'bg-gradient-to-br from-purple-400 to-purple-600', objectives: { knowledge: 'อธิบาย F = ma ได้', process: 'คำนวณหาแรง มวล ความเร่ง', attitude: 'นำไปใช้ในชีวิตจริง' }, keyConcept: 'แรงลัพธ์ทำให้วัตถุเกิดความเร่งในทิศเดียวกับแรงลัพธ์', formula: 'F = ma', formulaDescription: 'F = แรง (N), m = มวล (kg), a = ความเร่ง (m/s²)' },
-                    { title: 'กฎการเคลื่อนที่ของนิวตัน ข้อที่ 3', description: 'แรงกิริยา-ปฏิกิริยา', duration: '50 นาที', topics: 5, progress: 0, status: 'not_started', color: 'bg-gradient-to-br from-orange-400 to-orange-600', objectives: { knowledge: 'อธิบายกฎข้อที่ 3 ได้', process: 'ระบุคู่แรงกิริยา-ปฏิกิริยา', attitude: 'นำไปอธิบายการเคลื่อนที่' }, keyConcept: 'ทุกแรงกิริยามีแรงปฏิกิริยาที่เท่ากันแต่ทิศตรงข้าม' },
-                    { title: 'การประยุกต์กฎของนิวตัน', description: 'แก้โจทย์ปัญหา', duration: '60 นาที', topics: 8, progress: 0, status: 'not_started', color: 'bg-gradient-to-br from-pink-400 to-pink-600', objectives: { knowledge: 'เชื่อมโยงกฎทั้ง 3 ข้อ', process: 'แก้โจทย์ที่ซับซ้อน', attitude: 'มีความมั่นใจ' }, keyConcept: 'การแก้ปัญหาต้องวิเคราะห์แรงทั้งหมดและใช้กฎนิวตันอย่างเป็นระบบ' },
-                    { title: 'แรงเสียดทาน', description: 'แรงเสียดทานสถิตและจลน์', duration: '55 นาที', topics: 6, progress: 0, status: 'not_started', color: 'bg-gradient-to-br from-cyan-400 to-cyan-600', objectives: { knowledge: 'อธิบายแรงเสียดทานได้', process: 'คำนวณแรงเสียดทาน', attitude: 'เห็นประโยชน์ของแรงเสียดทาน' }, keyConcept: 'แรงเสียดทานเกิดเมื่อผิวสัมผัสสัมผัสกัน' }
-                ],
-
-                quizQuestions: [
-                    { topic: 'กฎข้อที่ 2', question: 'รถยนต์มวล 1,000 kg เร่งความเร็วด้วยความเร่ง 2 m/s² ต้องใช้แรงขับเท่าไร?', options: ['500 N', '2,000 N', '1,000 N', '4,000 N'], correct: 1, explanation: 'จากสูตร F = ma, F = 1,000 × 2 = 2,000 N', hint: 'ลองนึกถึงสูตร F = ma นะครับ คุณมีค่า m และ a แล้ว ลองแทนค่าดูสิ!' },
-                    { topic: 'กฎข้อที่ 2', question: 'ถ้าแรงลัพธ์เพิ่มขึ้น 2 เท่า ความเร่งจะเป็นอย่างไร (มวลคงที่)?', options: ['เท่าเดิม', 'เพิ่มขึ้น 2 เท่า', 'ลดลง 2 เท่า', 'เพิ่มขึ้น 4 เท่า'], correct: 1, explanation: 'จาก F = ma เมื่อ m คงที่ ถ้า F เพิ่ม 2 เท่า a ก็จะเพิ่ม 2 เท่า', hint: 'คิดถึงความสัมพันธ์ใน F = ma นะครับ ถ้า m คงที่ แล้ว F เพิ่มขึ้น a จะเปลี่ยนไปอย่างไร? ลองวาดกราฟในใจดู!' },
-                    { topic: 'กฎข้อที่ 2', question: 'เมสซี่เตะลูกฟุตบอลมวล 0.45 kg ด้วยแรง 900 N ความเร่งคือเท่าไร?', options: ['400 m/s²', '2,000 m/s²', '405 m/s²', '450 m/s²'], correct: 1, explanation: 'จาก a = F/m = 900/0.45 = 2,000 m/s²', hint: 'ครั้งนี้โจทย์ให้ F และ m มา ต้องหา a จัดสมการ F = ma ใหม่เป็น a = ? ลองคิดดู!' },
-                    { topic: 'แนวคิดพื้นฐาน', question: 'ข้อใดกล่าวถูกต้องเกี่ยวกับความเร่ง?', options: ['ความเร่งเป็นปริมาณสเกลาร์', 'ความเร่งมีหน่วยเป็น m/s', 'ความเร่งบอกอัตราการเปลี่ยนแปลงความเร็ว', 'ความเร่งไม่มีทิศทาง'], correct: 2, explanation: 'ความเร่งคืออัตราการเปลี่ยนแปลงความเร็ว มีหน่วย m/s² เป็นปริมาณเวกเตอร์', hint: 'ลองนึกถึงคำจำกัดความของความเร่งนะครับ มันบอกอะไรเกี่ยวกับความเร็ว? และมันมีทิศทางไหม?' },
-                    { topic: 'การประยุกต์', question: 'วัตถุมวล 5 kg ออกแรงผลัก 30 N แรงเสียดทาน 10 N ความเร่งเป็นเท่าไร?', options: ['2 m/s²', '4 m/s²', '6 m/s²', '8 m/s²'], correct: 1, explanation: 'แรงลัพธ์ = 30 - 10 = 20 N, a = F/m = 20/5 = 4 m/s²', hint: 'ข้อนี้ต้องหาแรงลัพธ์ก่อนนะครับ! แรงผลักกับแรงเสียดทานทำงานไปทิศเดียวกันไหม? แล้วค่อยใช้ F = ma' }
-                ],
-
-                chatMessages: [{ role: 'ai', content: 'สวัสดีครับ! ผมคือ AI Tutor พร้อมช่วยเรื่องฟิสิกส์\n\nผมใช้วิธีสอนแบบโซเครติส คือจะถามคำถามนำให้คุณคิดเอง เพื่อเข้าใจอย่างลึกซึ้ง\n\nถามมาได้เลยครับ!' }],
-
-                // Teacher Data
-                students: [
-                    { id: 1, name: 'สมชาย ใจดี', progress: 85, score: 88, lastActive: 'วันนี้', status: 'active' },
-                    { id: 2, name: 'สมหญิง รักเรียน', progress: 92, score: 95, lastActive: 'วันนี้', status: 'active' },
-                    { id: 3, name: 'ประวิทย์ เก่งมาก', progress: 78, score: 72, lastActive: 'เมื่อวาน', status: 'active' },
-                    { id: 4, name: 'พิมพ์ใจ สวยงาม', progress: 45, score: 42, lastActive: '3 วันก่อน', status: 'at_risk' },
-                    { id: 5, name: 'วิชัย ขยันเรียน', progress: 65, score: 68, lastActive: 'วันนี้', status: 'active' },
-                    { id: 6, name: 'นภา ท้องฟ้า', progress: 30, score: 35, lastActive: '1 สัปดาห์', status: 'at_risk' },
-                ],
-
-                lessonProgress: [
-                    { name: 'บทที่ 1 - แรงและการเคลื่อนที่', completed: 32, total: 35 },
-                    { name: 'บทที่ 2 - กฎนิวตันข้อที่ 1', completed: 28, total: 35 },
-                    { name: 'บทที่ 3 - กฎนิวตันข้อที่ 2', completed: 18, total: 35 },
-                    { name: 'บทที่ 4 - กฎนิวตันข้อที่ 3', completed: 5, total: 35 },
-                ],
-
-                topMisconceptions: [
-                    { misconception: 'วัตถุหนักกว่าตกเร็วกว่า', count: 12, topic: 'กฎข้อที่ 2' },
-                    { misconception: 'ต้องมีแรงถึงจะเคลื่อนที่ได้', count: 8, topic: 'กฎข้อที่ 1' },
-                    { misconception: 'แรงกิริยาและปฏิกิริยาหักล้างกัน', count: 6, topic: 'กฎข้อที่ 3' },
-                ],
-
-                allMisconceptions: [
-                    { misconception: 'วัตถุหนักกว่าตกเร็วกว่าวัตถุเบา', count: 12, topic: 'กฎนิวตันข้อที่ 2', correct: 'ในสุญญากาศ วัตถุทุกชนิดตกด้วยความเร่งเท่ากัน (g = 9.8 m/s²) ไม่ขึ้นกับมวล', remedy: 'ใช้ PhET Simulation แสดงการตกในสุญญากาศ หรือทำการทดลองหยดลูกบอลและขนนกในหลอดสุญญากาศ', students: ['พิมพ์ใจ', 'นภา', 'วิชัย', 'และอีก 9 คน'] },
-                    { misconception: 'ต้องมีแรงกระทำวัตถุถึงจะเคลื่อนที่ได้', count: 8, topic: 'กฎนิวตันข้อที่ 1', correct: 'วัตถุที่เคลื่อนที่อยู่แล้วจะเคลื่อนที่ต่อไปด้วยความเร็วคงตัว ถ้าไม่มีแรงลัพธ์มากระทำ', remedy: 'ใช้รถเข็นบนรางลื่นหรือ air hockey แสดงให้เห็นว่าวัตถุเคลื่อนที่ได้โดยไม่ต้องมีแรง', students: ['ประวิทย์', 'นภา', 'และอีก 6 คน'] },
-                    { misconception: 'แรงกิริยาและปฏิกิริยาหักล้างกันจึงไม่มีการเคลื่อนที่', count: 6, topic: 'กฎนิวตันข้อที่ 3', correct: 'แรงกิริยาและปฏิกิริยากระทำต่อวัตถุคนละชิ้น จึงไม่หักล้างกัน', remedy: 'ให้นักเรียน 2 คนนั่งเก้าอี้ล้อแล้วผลักกัน สังเกตว่าทั้งคู่เคลื่อนที่', students: ['พิมพ์ใจ', 'และอีก 5 คน'] },
-                ],
-
-                recentActivities: [
-                    { student: 'สมหญิง รักเรียน', action: 'ทำแบบทดสอบบทที่ 3 เสร็จ', time: '5 นาทีที่แล้ว', score: 95 },
-                    { student: 'สมชาย ใจดี', action: 'ถาม AI เรื่อง F = ma', time: '15 นาทีที่แล้ว', score: null },
-                    { student: 'วิชัย ขยันเรียน', action: 'เรียนบทที่ 3 เสร็จ', time: '30 นาทีที่แล้ว', score: null },
-                    { student: 'ประวิทย์ เก่งมาก', action: 'ทำแบบทดสอบบทที่ 2', time: '1 ชั่วโมงที่แล้ว', score: 72 },
-                ],
-
-                init() {},
-
-                selectAnswer(index) {
-                    if (!this.showAnswer) {
-                        this.selectedAnswer = index;
-                    }
-                },
-
-                checkAnswer() {
-                    this.showAnswer = true;
-                    if (this.selectedAnswer === this.quizQuestions[this.currentQuestion].correct) {
-                        this.score++;
-                    }
-                },
-
-                nextQuestion() {
-                    if (this.currentQuestion < this.quizQuestions.length - 1) {
-                        this.currentQuestion++;
-                        this.selectedAnswer = null;
-                        this.showAnswer = false;
-                        this.showHint = false;
-                        this.currentHint = '';
-                    } else {
-                        alert(`คุณทำได้ ${this.score} จาก ${this.quizQuestions.length} ข้อ (${Math.round(this.score/this.quizQuestions.length*100)}%)`);
-                        this.currentQuestion = 0;
-                        this.selectedAnswer = null;
-                        this.showAnswer = false;
-                        this.showHint = false;
-                        this.currentHint = '';
-                        this.score = 0;
-                    }
-                },
-
-                getAIHint() {
-                    this.isLoadingHint = true;
-                    // Simulate AI response
-                    setTimeout(() => {
-                        this.currentHint = this.quizQuestions[this.currentQuestion].hint;
-                        this.isLoadingHint = false;
-                    }, 800);
-                },
-
-                addMessage(role, content) {
-                    this.chatMessages.push({ role, content });
-                    this.$nextTick(() => {
-                        const container = document.getElementById('chatContainer');
-                        if (container) container.scrollTop = container.scrollHeight;
-                    });
-                },
-
-                sendMessage() {
-                    if (!this.userMessage.trim()) return;
-                    this.addMessage('user', this.userMessage);
-                    const question = this.userMessage;
-                    this.userMessage = '';
-                    this.isTyping = true;
-
-                    setTimeout(() => {
-                        this.isTyping = false;
-                        this.addMessage('ai', this.generateAIResponse(question));
-                    }, 1200);
-                },
-
-                sendSuggestedQuestion(question) {
-                    this.userMessage = question;
-                    this.sendMessage();
-                },
-
-                generateAIResponse(question) {
-                    if (question.includes('F = ma') || question.includes('F=ma')) {
-                        return `คำถามดีมากครับ! ก่อนที่ผมจะอธิบาย ลองคิดดูก่อนนะ:\n\n🤔 ถ้าคุณผลักรถเข็นที่ว่างเปล่า กับรถเข็นที่บรรทุกของหนัก อันไหนจะเคลื่อนที่ง่ายกว่า?\n\n💡 คำตอบ: F = ma บอกว่า\n• F (แรง) = m (มวล) × a (ความเร่ง)\n• ถ้ามวลมาก ต้องใช้แรงมากขึ้นเพื่อให้ได้ความเร่งเท่าเดิม\n• ถ้าแรงเท่ากัน มวลมากจะเร่งได้น้อยกว่า\n\nลองยกตัวอย่างมาอีกได้ไหมครับ?`;
-                    }
-                    if (question.includes('วัตถุหนัก') || question.includes('ตกเร็ว')) {
-                        return `น่าสนใจมากครับ! นี่เป็น misconception ที่พบบ่อย\n\n🧪 ความจริง:\nในสุญญากาศ (ไม่มีอากาศ) วัตถุทุกชิ้นตกด้วยความเร่งเท่ากัน = 9.8 m/s²\n\n💡 ทำไมในชีวิตจริงขนนกตกช้ากว่าก้อนหิน?\n→ เพราะแรงต้านอากาศ! ไม่ใช่เพราะมวลต่างกัน\n\n🎥 ลองดูคลิป Apollo 15 ที่นักบินอวกาศทำการทดลองบนดวงจันทร์ จะเห็นว่าค้อนและขนนกตกพร้อมกัน!\n\nอยากรู้เพิ่มเติมเรื่องอะไรครับ?`;
-                    }
-                    if (question.includes('ตัวอย่าง') || question.includes('ชีวิตจริง')) {
-                        return `มาดูตัวอย่างกฎนิวตันในชีวิตจริงกันครับ! 🌟\n\n📌 กฎข้อ 1 (ความเฉื่อย):\n• ล้มไปข้างหน้าเมื่อรถเบรคกะทันหัน\n• นั่นคือเหตุผลที่ต้องคาดเข็มขัดนิรภัย!\n\n📌 กฎข้อ 2 (F = ma):\n• รถ F1 เร่งเร็วกว่ารถบรรทุก (มวลน้อยกว่า + แรงมาก)\n• ผลักรถเข็นว่างง่ายกว่ารถเข็นบรรทุกของ\n\n📌 กฎข้อ 3 (กิริยา-ปฏิกิริยา):\n• เราเดินได้เพราะเท้าดันพื้น พื้นดันเท้ากลับ\n• จรวดพุ่งไปได้เพราะพ่นก๊าซออกด้านหลัง\n\nอยากให้อธิบายข้อไหนเพิ่มครับ?`;
-                    }
-                    return `ขอบคุณสำหรับคำถามครับ! 🙏\n\nช่วยบอกผมเพิ่มเติมหน่อยได้ไหมครับ:\n• คุณกำลังเรียนเรื่องอะไรอยู่?\n• มีส่วนไหนที่สงสัยเป็นพิเศษ?\n\nผมจะได้ช่วยอธิบายได้ตรงจุดครับ! 😊`;
-                }
-            }
-        }
-    </script>
+    <!-- Load Data and App -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
