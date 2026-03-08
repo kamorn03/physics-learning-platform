@@ -231,6 +231,151 @@ const lessonsData = {
                 content: 'การนำกฎการเคลื่อนที่ไปใช้แก้ปัญหาต่างๆ เช่น ระบบรอก พื้นเอียง'
             }
         ]
+    },
+
+    // บทที่ 4: โมเมนตัมและการชน
+    chapter4: {
+        id: 4,
+        title: 'โมเมนตัมและการชน',
+        color: 'chapter-4',
+        colorClass: 'from-blue-500 to-blue-700',
+        description: 'ศึกษาโมเมนตัม การดล และกฎการอนุรักษ์โมเมนตัม',
+        progress: 0,
+        status: 'not_started',
+        objectives: {
+            knowledge: 'อธิบายโมเมนตัม การดล และกฎการอนุรักษ์โมเมนตัมได้',
+            process: 'วิเคราะห์และคำนวณโมเมนตัมในการชนแบบต่างๆ ได้',
+            attitude: 'เห็นความสำคัญของการนำหลักโมเมนตัมไปใช้ในการออกแบบอุปกรณ์นิรภัย'
+        },
+        topics: [
+            {
+                id: '4.1',
+                title: 'โมเมนตัม',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [],
+                content: 'โมเมนตัมคือผลคูณของมวลกับความเร็ว เป็นปริมาณเวกเตอร์',
+                formula: 'p = mv',
+                formulaDescription: 'p = โมเมนตัม (kg·m/s), m = มวล (kg), v = ความเร็ว (m/s)'
+            },
+            {
+                id: '4.2',
+                title: 'การดลและแรงดล',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [],
+                content: 'การดลคือการเปลี่ยนแปลงโมเมนตัม เท่ากับแรงคูณเวลา',
+                formula: 'J = FΔt = Δp',
+                formulaDescription: 'J = การดล, F = แรง, Δt = ช่วงเวลา, Δp = การเปลี่ยนแปลงโมเมนตัม'
+            },
+            {
+                id: '4.3',
+                title: 'กฎการอนุรักษ์โมเมนตัม',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [],
+                content: 'ในระบบปิดที่ไม่มีแรงภายนอก โมเมนตัมรวมคงตัว'
+            },
+            {
+                id: '4.4',
+                title: 'การชน',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [
+                    { id: '4.4.1', title: 'การชนแบบยืดหยุ่น', progress: 0 },
+                    { id: '4.4.2', title: 'การชนแบบไม่ยืดหยุ่น', progress: 0 }
+                ],
+                content: 'การชนแบบยืดหยุ่นอนุรักษ์ทั้งโมเมนตัมและพลังงานจลน์ การชนแบบไม่ยืดหยุ่นอนุรักษ์เฉพาะโมเมนตัม'
+            }
+        ]
+    },
+
+    // บทที่ 5: งานและพลังงาน
+    chapter5: {
+        id: 5,
+        title: 'งานและพลังงาน',
+        color: 'chapter-5',
+        colorClass: 'from-purple-500 to-purple-700',
+        description: 'ศึกษางาน พลังงาน กฎการอนุรักษ์พลังงานกล และเครื่องกล',
+        progress: 0,
+        status: 'not_started',
+        objectives: {
+            knowledge: 'อธิบายงาน พลังงาน และกฎการอนุรักษ์พลังงานกลได้',
+            process: 'คำนวณงาน พลังงาน และวิเคราะห์ประสิทธิภาพของเครื่องกลได้',
+            attitude: 'เห็นความสำคัญของการใช้พลังงานอย่างมีประสิทธิภาพ'
+        },
+        topics: [
+            {
+                id: '5.1',
+                title: 'งาน',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [],
+                content: 'งานคือผลคูณของแรงกับการกระจัดในทิศทางของแรง',
+                formula: 'W = Fs cos θ',
+                formulaDescription: 'W = งาน (J), F = แรง (N), s = การกระจัด (m), θ = มุมระหว่างแรงกับการกระจัด'
+            },
+            {
+                id: '5.2',
+                title: 'กำลัง',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [],
+                content: 'กำลังคืออัตราการทำงาน มีหน่วยเป็นวัตต์',
+                formula: 'P = W/t',
+                formulaDescription: 'P = กำลัง (W), W = งาน (J), t = เวลา (s)'
+            },
+            {
+                id: '5.3',
+                title: 'พลังงานจลน์',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [],
+                content: 'พลังงานจลน์คือพลังงานที่วัตถุมีเนื่องจากการเคลื่อนที่',
+                formula: 'KE = ½mv²',
+                formulaDescription: 'KE = พลังงานจลน์ (J), m = มวล (kg), v = ความเร็ว (m/s)'
+            },
+            {
+                id: '5.4',
+                title: 'พลังงานศักย์',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [
+                    { id: '5.4.1', title: 'พลังงานศักย์โน้มถ่วง', progress: 0 },
+                    { id: '5.4.2', title: 'พลังงานศักย์', progress: 0 }
+                ],
+                content: 'พลังงานศักย์คือพลังงานที่สะสมอยู่ในวัตถุเนื่องจากตำแหน่งหรือสภาพของวัตถุ',
+                formula: 'PE = mgh',
+                formulaDescription: 'PE = พลังงานศักย์โน้มถ่วง (J), m = มวล (kg), g = ความเร่งโน้มถ่วง, h = ความสูง (m)'
+            },
+            {
+                id: '5.5',
+                title: 'การอนุรักษ์พลังงานกล',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [
+                    { id: '5.5.1', title: 'งานเนื่องจากแรงอนุรักษ์', progress: 0 },
+                    { id: '5.5.2', title: 'กฎการอนุรักษ์พลังงานกล', progress: 0 }
+                ],
+                content: 'ในระบบที่มีเฉพาะแรงอนุรักษ์ พลังงานกลรวม (KE + PE) คงตัว',
+                formula: 'KE₁ + PE₁ = KE₂ + PE₂',
+                formulaDescription: 'พลังงานกลรวมที่ตำแหน่งเริ่มต้น = พลังงานกลรวมที่ตำแหน่งสุดท้าย'
+            },
+            {
+                id: '5.6',
+                title: 'เครื่องกล',
+                progress: 0,
+                status: 'not_started',
+                subtopics: [
+                    { id: '5.6.1', title: 'ประสิทธิภาพของเครื่องกล', progress: 0 },
+                    { id: '5.6.2', title: 'หลักการของงานกับเครื่องกลอย่างง่าย', progress: 0 },
+                    { id: '5.6.3', title: 'หลักการของสมดุลกลกับเครื่องกลอย่างง่าย', progress: 0 }
+                ],
+                content: 'เครื่องกลช่วยผ่อนแรงหรือเปลี่ยนทิศทางของแรง แต่ไม่สามารถลดงานที่ต้องทำได้',
+                formula: 'η = (W_out / W_in) × 100%',
+                formulaDescription: 'η = ประสิทธิภาพ, W_out = งานที่ได้, W_in = งานที่ใส่เข้าไป'
+            }
+        ]
     }
 };
 
@@ -336,24 +481,111 @@ const quizData = {
             explanation: 'f = μN = μmg = 0.3 × 10 × 10 = 30 N',
             hint: 'แรงเสียดทาน f = μN โดย N = mg บนพื้นราบ'
         }
+    ],
+    chapter4: [
+        {
+            id: 'c4q1',
+            topic: 'โมเมนตัม',
+            question: 'รถยนต์มวล 1,000 kg เคลื่อนที่ด้วยความเร็ว 20 m/s โมเมนตัมของรถคือเท่าไร?',
+            options: ['50 kg·m/s', '20,000 kg·m/s', '1,020 kg·m/s', '500 kg·m/s'],
+            correct: 1,
+            explanation: 'p = mv = 1,000 × 20 = 20,000 kg·m/s',
+            hint: 'ใช้สูตร p = mv'
+        },
+        {
+            id: 'c4q2',
+            topic: 'การดล',
+            question: 'แรง 100 N กระทำต่อวัตถุเป็นเวลา 0.5 s การดลที่เกิดขึ้นคือเท่าไร?',
+            options: ['200 N·s', '50 N·s', '0.5 N·s', '100.5 N·s'],
+            correct: 1,
+            explanation: 'J = FΔt = 100 × 0.5 = 50 N·s',
+            hint: 'การดล = แรง × เวลา'
+        },
+        {
+            id: 'c4q3',
+            topic: 'การอนุรักษ์โมเมนตัม',
+            question: 'วัตถุ A มวล 2 kg เคลื่อนที่ด้วยความเร็ว 3 m/s ชนวัตถุ B มวล 1 kg ที่หยุดนิ่ง แล้วติดกันไป ความเร็วหลังชนคือเท่าไร?',
+            options: ['1 m/s', '2 m/s', '3 m/s', '6 m/s'],
+            correct: 1,
+            explanation: 'm₁v₁ + m₂v₂ = (m₁+m₂)v, 2×3 + 1×0 = 3v, v = 2 m/s',
+            hint: 'ใช้กฎการอนุรักษ์โมเมนตัม: โมเมนตัมก่อนชน = โมเมนตัมหลังชน'
+        },
+        {
+            id: 'c4q4',
+            topic: 'การชน',
+            question: 'การชนแบบใดที่อนุรักษ์ทั้งโมเมนตัมและพลังงานจลน์?',
+            options: ['การชนแบบไม่ยืดหยุ่น', 'การชนแบบยืดหยุ่น', 'ทุกการชน', 'ไม่มีการชนแบบใดเลย'],
+            correct: 1,
+            explanation: 'การชนแบบยืดหยุ่นอนุรักษ์ทั้งโมเมนตัมและพลังงานจลน์',
+            hint: 'การชนแบบยืดหยุ่นคือการชนที่ไม่สูญเสียพลังงานจลน์'
+        }
+    ],
+    chapter5: [
+        {
+            id: 'c5q1',
+            topic: 'งาน',
+            question: 'ออกแรง 50 N ดันกล่องไปได้ระยะ 4 m ในทิศเดียวกับแรง งานที่ทำคือเท่าไร?',
+            options: ['12.5 J', '200 J', '54 J', '46 J'],
+            correct: 1,
+            explanation: 'W = Fs cos θ = 50 × 4 × cos 0° = 200 J',
+            hint: 'งาน = แรง × ระยะทาง × cos(มุม) เมื่อแรงและการเคลื่อนที่ทิศเดียวกัน θ = 0°'
+        },
+        {
+            id: 'c5q2',
+            topic: 'พลังงานจลน์',
+            question: 'รถยนต์มวล 1,000 kg เคลื่อนที่ด้วยความเร็ว 10 m/s พลังงานจลน์คือเท่าไร?',
+            options: ['10,000 J', '50,000 J', '100,000 J', '5,000 J'],
+            correct: 1,
+            explanation: 'KE = ½mv² = ½ × 1,000 × 10² = 50,000 J',
+            hint: 'ใช้สูตร KE = ½mv²'
+        },
+        {
+            id: 'c5q3',
+            topic: 'พลังงานศักย์',
+            question: 'วัตถุมวล 5 kg อยู่สูงจากพื้น 10 m พลังงานศักย์โน้มถ่วงคือเท่าไร? (g = 10 m/s²)',
+            options: ['50 J', '500 J', '5 J', '5,000 J'],
+            correct: 1,
+            explanation: 'PE = mgh = 5 × 10 × 10 = 500 J',
+            hint: 'ใช้สูตร PE = mgh'
+        },
+        {
+            id: 'c5q4',
+            topic: 'การอนุรักษ์พลังงานกล',
+            question: 'ลูกบอลตกจากที่สูง 20 m ความเร็วขณะกระทบพื้นคือเท่าไร? (g = 10 m/s², ไม่คิดแรงต้านอากาศ)',
+            options: ['10 m/s', '20 m/s', '200 m/s', '400 m/s'],
+            correct: 1,
+            explanation: 'จากการอนุรักษ์พลังงาน: mgh = ½mv², v = √(2gh) = √(2×10×20) = 20 m/s',
+            hint: 'พลังงานศักย์เปลี่ยนเป็นพลังงานจลน์ทั้งหมด'
+        },
+        {
+            id: 'c5q5',
+            topic: 'ประสิทธิภาพเครื่องกล',
+            question: 'เครื่องกลใส่งาน 500 J ได้งานออกมา 400 J ประสิทธิภาพคือเท่าไร?',
+            options: ['125%', '80%', '20%', '100 J'],
+            correct: 1,
+            explanation: 'η = (W_out / W_in) × 100% = (400/500) × 100% = 80%',
+            hint: 'ประสิทธิภาพ = (งานที่ได้/งานที่ใส่) × 100%'
+        }
     ]
 };
 
 // Teacher Mock Data
 const teacherData = {
     students: [
-        { id: 1, name: 'สมชาย ใจดี', progress: 85, score: 88, lastActive: 'วันนี้', status: 'active', chapter1: 100, chapter2: 90, chapter3: 65 },
-        { id: 2, name: 'สมหญิง รักเรียน', progress: 92, score: 95, lastActive: 'วันนี้', status: 'active', chapter1: 100, chapter2: 95, chapter3: 80 },
-        { id: 3, name: 'ประวิทย์ เก่งมาก', progress: 78, score: 72, lastActive: 'เมื่อวาน', status: 'active', chapter1: 90, chapter2: 80, chapter3: 65 },
-        { id: 4, name: 'พิมพ์ใจ สวยงาม', progress: 45, score: 42, lastActive: '3 วันก่อน', status: 'at_risk', chapter1: 70, chapter2: 45, chapter3: 20 },
-        { id: 5, name: 'วิชัย ขยันเรียน', progress: 65, score: 68, lastActive: 'วันนี้', status: 'active', chapter1: 85, chapter2: 70, chapter3: 40 },
-        { id: 6, name: 'นภา ท้องฟ้า', progress: 30, score: 35, lastActive: '1 สัปดาห์', status: 'at_risk', chapter1: 50, chapter2: 30, chapter3: 10 },
+        { id: 1, name: 'สมชาย ใจดี', progress: 85, score: 88, lastActive: 'วันนี้', status: 'active', chapter1: 100, chapter2: 90, chapter3: 65, chapter4: 50, chapter5: 20 },
+        { id: 2, name: 'สมหญิง รักเรียน', progress: 92, score: 95, lastActive: 'วันนี้', status: 'active', chapter1: 100, chapter2: 95, chapter3: 80, chapter4: 60, chapter5: 30 },
+        { id: 3, name: 'ประวิทย์ เก่งมาก', progress: 78, score: 72, lastActive: 'เมื่อวาน', status: 'active', chapter1: 90, chapter2: 80, chapter3: 65, chapter4: 40, chapter5: 15 },
+        { id: 4, name: 'พิมพ์ใจ สวยงาม', progress: 45, score: 42, lastActive: '3 วันก่อน', status: 'at_risk', chapter1: 70, chapter2: 45, chapter3: 20, chapter4: 10, chapter5: 0 },
+        { id: 5, name: 'วิชัย ขยันเรียน', progress: 65, score: 68, lastActive: 'วันนี้', status: 'active', chapter1: 85, chapter2: 70, chapter3: 40, chapter4: 25, chapter5: 10 },
+        { id: 6, name: 'นภา ท้องฟ้า', progress: 30, score: 35, lastActive: '1 สัปดาห์', status: 'at_risk', chapter1: 50, chapter2: 30, chapter3: 10, chapter4: 5, chapter5: 0 },
     ],
 
     lessonProgress: [
         { name: 'บทที่ 1 - ธรรมชาติและพัฒนาการทางฟิสิกส์', completed: 32, total: 35 },
         { name: 'บทที่ 2 - การเคลื่อนที่แนวตรง', completed: 25, total: 35 },
         { name: 'บทที่ 3 - แรงและกฎการเคลื่อนที่', completed: 18, total: 35 },
+        { name: 'บทที่ 4 - โมเมนตัมและการชน', completed: 10, total: 35 },
+        { name: 'บทที่ 5 - งานและพลังงาน', completed: 5, total: 35 },
     ],
 
     topMisconceptions: [
