@@ -133,7 +133,17 @@ function app() {
                 this.currentHint = '';
             } else {
                 const percentage = Math.round(this.score / this.currentQuiz.length * 100);
-                alert(`คุณทำได้ ${this.score} จาก ${this.currentQuiz.length} ข้อ (${percentage}%)`);
+                let message = `คุณทำได้ ${this.score} จาก ${this.currentQuiz.length} ข้อ (${percentage}%)\n\n`;
+
+                if (percentage <= 59) {
+                    message += `📚 ควรปรับปรุง\n\nไม่เป็นไรนะครับ! การเรียนรู้ต้องใช้เวลา ลองทบทวนเนื้อหาและฝึกทำแบบฝึกหัดเพิ่มเติม แล้วกลับมาทำใหม่อีกครั้งนะครับ สู้ๆ!`;
+                } else if (percentage >= 60 && percentage <= 79) {
+                    message += `🎉 ยอดเยี่ยม! อยู่ในเกณฑ์ดี\n\nคุณทำได้ดีมากครับ! พยายามต่อไปอีกนิดเพื่อไปให้ถึง 100% คุณทำได้แน่นอน!`;
+                } else {
+                    message += `🏆 ขอแสดงความยินดี! อยู่ในเกณฑ์ดีเยี่ยม\n\nเก่งมากครับ! คุณเข้าใจเนื้อหาได้อย่างดีเยี่ยม ความพยายามของคุณได้ผลลัพธ์ที่ยอดเยี่ยม!`;
+                }
+
+                alert(message);
                 this.resetQuiz();
                 this.currentPage = 'lesson-detail';
             }
