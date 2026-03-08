@@ -31,7 +31,7 @@ function app() {
         ],
 
         // Data
-        chapters: [lessonsData.chapter1, lessonsData.chapter2, lessonsData.chapter3],
+        chapters: [lessonsData.chapter5],
         students: teacherData.students,
         lessonProgress: teacherData.lessonProgress,
         topMisconceptions: teacherData.topMisconceptions,
@@ -248,11 +248,9 @@ function app() {
         // Helper Functions
         getChapterColor(chapterId) {
             const colors = {
-                1: 'bg-gradient-to-br from-red-500 to-red-700',
-                2: 'bg-gradient-to-br from-amber-500 to-amber-700',
-                3: 'bg-gradient-to-br from-emerald-500 to-emerald-700'
+                5: 'bg-gradient-to-br from-purple-500 to-purple-700'
             };
-            return colors[chapterId] || 'bg-gradient-to-br from-gray-500 to-gray-700';
+            return colors[chapterId] || 'bg-gradient-to-br from-purple-500 to-purple-700';
         },
 
         getProgressColor(progress) {

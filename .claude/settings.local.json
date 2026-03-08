@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nเพิ่มบทที่ 4-5 ตามแผนใหม่\n\n- เพิ่มบทที่ 4: โมเมนตัมและการชน\n- เพิ่มบทที่ 5: งานและพลังงาน \\(5.4.2-5.6.3\\)\n- เพิ่มแบบทดสอบบทที่ 4-5\n- อัปเดตข้อมูลความก้าวหน้าของนักเรียน\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nเพิ่มบทที่ 4-5 ตามแผนใหม่\n\n- เพิ่มบทที่ 4: โมเมนตัมและการชน\n- เพิ่มบทที่ 5: งานและพลังงาน \\(5.4.2-5.6.3\\)\n- เพิ่มแบบทดสอบบทที่ 4-5\n- อัปเดตข้อมูลความก้าวหน้าของนักเรียน\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git rm:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nลบบทเก่า เก็บเฉพาะบทที่ 5 ตาม plan ใหม่\n\n- ลบบทที่ 1-4 ออกจาก lessonsData\n- ลบแบบทดสอบบทที่ 1-4\n- อัปเดต teacherData ให้มีเฉพาะบทที่ 5\n- ลบโฟลเดอร์ old/\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)"
     ]
   }
 }
