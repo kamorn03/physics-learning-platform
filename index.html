@@ -148,7 +148,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-slate-500 text-sm">บทเรียนทั้งหมด</p>
-                            <p class="text-2xl font-bold text-slate-800 mt-1">3 บท</p>
+                            <p class="text-2xl font-bold text-slate-800 mt-1" x-text="chapters.length + ' บท'"></p>
                         </div>
                         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -172,19 +172,19 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <div class="lg:col-span-2 glass-card rounded-2xl p-6 shadow-lg">
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">เรียนต่อจากที่ค้างไว้</h2>
-                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl p-6 text-white relative overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-700 rounded-xl p-6 text-white relative overflow-hidden">
                         <div class="relative z-10">
-                            <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm mb-3">บทที่ 3</span>
-                            <h3 class="text-xl font-bold mb-2">แรงและกฎการเคลื่อนที่</h3>
-                            <p class="text-white/80 mb-4">เรียนรู้แรง กฎการเคลื่อนที่ของนิวตัน และแรงเสียดทาน</p>
+                            <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm mb-3" x-text="'บทที่ ' + chapters[0]?.id"></span>
+                            <h3 class="text-xl font-bold mb-2" x-text="chapters[0]?.title"></h3>
+                            <p class="text-white/80 mb-4" x-text="chapters[0]?.description"></p>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4">
                                     <div class="w-32 h-2 bg-white/20 rounded-full">
-                                        <div class="w-[65%] h-full bg-white rounded-full"></div>
+                                        <div class="h-full bg-white rounded-full" :style="'width: ' + (chapters[0]?.progress || 0) + '%'"></div>
                                     </div>
-                                    <span>65%</span>
+                                    <span x-text="(chapters[0]?.progress || 0) + '%'"></span>
                                 </div>
-                                <button @click="selectChapter(chapters[2])" class="px-6 py-2 bg-white text-emerald-600 rounded-lg font-semibold hover:bg-white/90 transition-all">เรียนต่อ</button>
+                                <button @click="selectChapter(chapters[0])" class="px-6 py-2 bg-white text-purple-600 rounded-lg font-semibold hover:bg-white/90 transition-all">เรียนต่อ</button>
                             </div>
                         </div>
                     </div>
@@ -685,10 +685,8 @@
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">นักเรียน</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 1</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 2</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 3</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">เฉลี่ย</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">บทที่ 5</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">คะแนน</th>
                                 <th class="px-6 py-4 text-center text-sm font-semibold text-slate-600">สถานะ</th>
                             </tr>
                         </thead>
@@ -705,13 +703,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="font-medium" :class="student.chapter1 >= 80 ? 'text-green-600' : student.chapter1 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter1 + '%'"></span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="font-medium" :class="student.chapter2 >= 80 ? 'text-green-600' : student.chapter2 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter2 + '%'"></span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="font-medium" :class="student.chapter3 >= 80 ? 'text-green-600' : student.chapter3 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter3 + '%'"></span>
+                                        <span class="font-medium" :class="student.chapter5 >= 80 ? 'text-green-600' : student.chapter5 >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="student.chapter5 + '%'"></span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="font-bold text-slate-800" x-text="student.score + '%'"></span>
@@ -774,22 +766,10 @@
                         </thead>
                         <tbody class="divide-y divide-slate-200">
                             <tr>
-                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 1 - ธรรมชาติและพัฒนาการทางฟิสิกส์</td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-medium">85%</td>
-                                <td class="px-4 py-3 text-center text-green-600 font-medium">78%</td>
-                                <td class="px-4 py-3 text-center text-purple-600 font-medium">90%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 2 - การเคลื่อนที่แนวตรง</td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-medium">72%</td>
-                                <td class="px-4 py-3 text-center text-green-600 font-medium">68%</td>
+                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 5 - งานและพลังงาน</td>
+                                <td class="px-4 py-3 text-center text-blue-600 font-medium">75%</td>
+                                <td class="px-4 py-3 text-center text-green-600 font-medium">70%</td>
                                 <td class="px-4 py-3 text-center text-purple-600 font-medium">85%</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-3 font-medium text-slate-800">บทที่ 3 - แรงและกฎการเคลื่อนที่</td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-medium">65%</td>
-                                <td class="px-4 py-3 text-center text-green-600 font-medium">58%</td>
-                                <td class="px-4 py-3 text-center text-purple-600 font-medium">75%</td>
                             </tr>
                         </tbody>
                     </table>
